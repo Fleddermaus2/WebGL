@@ -11,7 +11,7 @@
         varying vec4 vColor;
 
         void main(void) {
-            gl_FragColor = vColor;
+        gl_FragColor = vColor;
         }
     </script>
 
@@ -24,9 +24,9 @@
 
         varying vec4 vColor;
 
-        void main(void){
-            gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-            vColor = aVertexColor;
+        void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        vColor = aVertexColor;
         }
     </script>
 
