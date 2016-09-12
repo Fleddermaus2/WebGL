@@ -16,6 +16,14 @@ var pMatrix = mat4.identity(mat4.create());
 
 var shaderProgram;
 
+//rotation
+var rTri = 0;
+var rSquare = 0;
+
+//animation
+var lastTime = 0;
+var mvMatrixStack = [];
+
 //initialise gl
 function initGL(canvas) {
     try{
@@ -99,6 +107,10 @@ function drawScene() {
     mat4.translate(mvMatrix, mvMatrix, [-1.5, 0, -7.0]);
 
     //triangle buffer
+    //rotate
+    mvPushMatrix();
+    mat4.rotate(mvMatrix, mvMatrix, degToRad(rTri), [1, 0, 0]);
+
     //vertex
     gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -109,11 +121,17 @@ function drawScene() {
     setMatrixUniforms();
     gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
 
+    mvPopMatrix();
+
     //move position
     mat4.translate(mvMatrix, mvMatrix,[3.0, 0.0, 0.0]);
 
 
     //square
+    //rotate
+    mvPushMatrix();
+    mat4.rotate(mvMatrix, mvMatrix, degToRad(rSquare), [1, 0, 0]);
+
     //vertex
     gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -123,6 +141,8 @@ function drawScene() {
 
     setMatrixUniforms();
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
+
+    mvPopMatrix();
 }
 
 function initShaders() {
@@ -208,5 +228,46 @@ function webGL() {
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
 
+    //draw regularly
+    tick();
+}
+
+function tick() {
+    requestAnimationFrame(tick);
     drawScene();
+    animate();
+}
+
+//rotate objects based on passed time since last call
+function animate() {
+    var timeNow = new Date().getTime();
+
+    if(lastTime != 0){
+        var elapsed = timeNow - lastTime;
+
+        //degrees per second
+        rTri += (90 * elapsed) / 1000.0;
+        rSquare += (75 * elapsed) / 1000.0;
+    }
+
+    lastTime = timeNow;
+}
+
+//store and get matrix before transformation and after
+function mvPushMatrix() {
+    var copy = mat4.create();
+    mat4.copy(copy, mvMatrix);
+    mvMatrixStack.push(copy);
+}
+
+function mvPopMatrix() {
+    if(mvMatrixStack.length == 0){
+        throw "Invalid popMatrix!";
+    }
+
+    mvMatrix = mvMatrixStack.pop();
+}
+
+function degToRad(degrees) {
+    return degrees * Math.PI / 180;
 }
