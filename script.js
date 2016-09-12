@@ -2,12 +2,14 @@
 var gl;
 
 //buffer for positions
-var triangleVertexPositionBuffer;
-var squareVertexPositionBuffer;
+var pyramidVertexPositionBuffer;
+var cubeVertexPositionBuffer;
 
 //buffer for color
-var triangleVertexColorBuffer;
-var squareVertexColorBuffer;
+var pyramidVertexColorBuffer;
+var cubeVertexColorBuffer;
+
+var cubeVertexIndexBuffer;
 
 //model-view-matrix
 var mvMatrix = mat4.identity(mat4.create());
@@ -17,8 +19,8 @@ var pMatrix = mat4.identity(mat4.create());
 var shaderProgram;
 
 //rotation
-var rTri = 0;
-var rSquare = 0;
+var rPyramid = 0;
+var rCube = 0;
 
 //animation
 var lastTime = 0;
@@ -43,58 +45,142 @@ function initGL(canvas) {
 function initBuffers() {
 
     //create triangle position buffer
-    triangleVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
+    pyramidVertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
 
     var vertices = [
+        // Front face
         0.0,  1.0,  0.0,
-        -1.0, -1.0,  0.0,
-        1.0, -1.0,  0.0
+        -1.0, -1.0,  1.0,
+        1.0, -1.0,  1.0,
+        // Right face
+        0.0,  1.0,  0.0,
+        1.0, -1.0,  1.0,
+        1.0, -1.0, -1.0,
+        // Back face
+        0.0,  1.0,  0.0,
+        1.0, -1.0, -1.0,
+        -1.0, -1.0, -1.0,
+        // Left face
+        0.0,  1.0,  0.0,
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0,  1.0
     ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
-    triangleVertexPositionBuffer.itemSize = 3;
-    triangleVertexPositionBuffer.numItems = 3;
+    pyramidVertexPositionBuffer.itemSize = 3;
+    pyramidVertexPositionBuffer.numItems = 12;
 
     //create triangle color buffer
-    triangleVertexColorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
+    pyramidVertexColorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
     var colors = [
+        // Front face
         1.0, 0.0, 0.0, 1.0,
         0.0, 1.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0
+        0.0, 0.0, 1.0, 1.0,
+        // Right face
+        1.0, 0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        // Back face
+        1.0, 0.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 0.0, 1.0, 1.0,
+        // Left face
+        1.0, 0.0, 0.0, 1.0,
+        0.0, 0.0, 1.0, 1.0,
+        0.0, 1.0, 0.0, 1.0
     ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-    triangleVertexColorBuffer.itemSize = 4;
-    triangleVertexColorBuffer.numItems = 3;
+    pyramidVertexColorBuffer.itemSize = 4;
+    pyramidVertexColorBuffer.numItems = 12;
 
     //create square position buffer
-    squareVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+    cubeVertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
 
     vertices = [
-        1.0,  1.0,  0.0,
-        -1.0,  1.0,  0.0,
-        1.0, -1.0,  0.0,
-        -1.0, -1.0,  0.0
+// vordere Fläche
+        -1.0, -1.0,  1.0, //0
+        1.0, -1.0,  1.0, //1
+        1.0,  1.0,  1.0,
+        -1.0,  1.0,  1.0,
+
+        // hintere Fläche
+        -1.0, -1.0, -1.0, //4
+        -1.0,  1.0, -1.0, //5
+        1.0,  1.0, -1.0,
+        1.0, -1.0, -1.0,
+
+        // obere Fläche
+        -1.0,  1.0, -1.0, //8
+        -1.0,  1.0,  1.0, //9
+        1.0,  1.0,  1.0,
+        1.0,  1.0, -1.0,
+
+        // untere Fläche
+        -1.0, -1.0, -1.0, //12
+        1.0, -1.0, -1.0, //13
+        1.0, -1.0,  1.0,
+        -1.0, -1.0,  1.0,
+
+        // rechte Fläche
+        1.0, -1.0, -1.0, //16
+        1.0,  1.0, -1.0, //17
+        1.0,  1.0,  1.0,
+        1.0, -1.0,  1.0,
+
+        // linke Fläche
+        -1.0, -1.0, -1.0, //20
+        -1.0, -1.0,  1.0, //21
+        -1.0,  1.0,  1.0,
+        -1.0,  1.0, -1.0
     ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
-    squareVertexPositionBuffer.itemSize = 3;
-    squareVertexPositionBuffer.numItems = 4;
+    cubeVertexPositionBuffer.itemSize = 3;
+    cubeVertexPositionBuffer.numItems = 24;
 
     //create square color buffer
-    squareVertexColorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
-    colors = []
-    for (var i=0; i < 4; i++) {
-        colors = colors.concat([0.5, 0.5, 1.0, 1.0]);
+    cubeVertexColorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
+    colors = [
+        [0.4, 1.0, 0.4, 1.0],     // Front face
+        [0.4, 1.0, 0.4, 1.0],     // Back face
+        [0.4, 0.0, 0.4, 1.0],     // Top face
+        [1.0, 1.0, 0.4, 1.0],     // Bottom face
+        [0.4, 1.0, 1.0, 1.0],     // Right face
+        [0.4, 1.0, 1.0, 1.0]     // Left face
+    ];
+
+    var unpackedColors = [];
+    for (var i in colors) {
+        var color = colors[i];
+        for (var j=0; j < 4; j++) {
+            unpackedColors = unpackedColors.concat(color);
+        }
     }
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-    squareVertexColorBuffer.itemSize = 4;
-    squareVertexColorBuffer.numItems = 4;
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
+    cubeVertexColorBuffer.itemSize = 4;
+    cubeVertexColorBuffer.numItems = 24;
+
+    //index buffer
+    cubeVertexIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
+    var cubeVertexIndices = [
+        0,  1,  2,      0,  2,  3,    // vorne
+        4,  5,  6,      4,  6,  7,    // hinten
+        8,  9,  10,     8,  10, 11,   // oben
+        12, 13, 14,     12, 14, 15,   // unten
+        16, 17, 18,     16, 18, 19,   // rechts
+        20, 21, 22,     20, 22, 23    // links
+    ];
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
+    cubeVertexIndices.itemSize = 1;
+    cubeVertexIndices.numItems = 36;
 }
 
 //draw all elements to canvas
@@ -106,20 +192,20 @@ function drawScene() {
     mat4.identity(mvMatrix);
     mat4.translate(mvMatrix, mvMatrix, [-1.5, 0, -7.0]);
 
-    //triangle buffer
+    //pyramid buffer
     //rotate
     mvPushMatrix();
-    mat4.rotate(mvMatrix, mvMatrix, degToRad(rTri), [1, 0, 0]);
+    mat4.rotate(mvMatrix, mvMatrix, degToRad(rPyramid), [0, 1, 0]);
 
     //vertex
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, pyramidVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
     //color
-    gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, pyramidVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
     setMatrixUniforms();
-    gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
+    gl.drawArrays(gl.TRIANGLES, 0, pyramidVertexPositionBuffer.numItems);
 
     mvPopMatrix();
 
@@ -127,20 +213,21 @@ function drawScene() {
     mat4.translate(mvMatrix, mvMatrix,[3.0, 0.0, 0.0]);
 
 
-    //square
+    //cube
     //rotate
     mvPushMatrix();
-    mat4.rotate(mvMatrix, mvMatrix, degToRad(rSquare), [1, 0, 0]);
+    mat4.rotate(mvMatrix, mvMatrix, degToRad(rCube), [1, 1, 1]);
 
     //vertex
-    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
     //color
-    gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, squareVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
     setMatrixUniforms();
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
+    gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
     mvPopMatrix();
 }
@@ -246,8 +333,8 @@ function animate() {
         var elapsed = timeNow - lastTime;
 
         //degrees per second
-        rTri += (90 * elapsed) / 1000.0;
-        rSquare += (75 * elapsed) / 1000.0;
+        rPyramid += (90 * elapsed) / 1000.0;
+        rCube += (75 * elapsed) / 1000.0;
     }
 
     lastTime = timeNow;
