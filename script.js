@@ -26,6 +26,9 @@ var rCube = 0;
 var lastTime = 0;
 var mvMatrixStack = [];
 
+//debug
+var once = true;
+
 //initialise gl
 function initGL(canvas) {
     try{
@@ -44,7 +47,7 @@ function initGL(canvas) {
 //initialise buffers for position
 function initBuffers() {
 
-    //create triangle position buffer
+    //create pyramid position buffer
     pyramidVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexPositionBuffer);
 
@@ -72,7 +75,7 @@ function initBuffers() {
     pyramidVertexPositionBuffer.itemSize = 3;
     pyramidVertexPositionBuffer.numItems = 12;
 
-    //create triangle color buffer
+    //create pyramid color buffer
     pyramidVertexColorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexColorBuffer);
     var colors = [
@@ -97,7 +100,7 @@ function initBuffers() {
     pyramidVertexColorBuffer.itemSize = 4;
     pyramidVertexColorBuffer.numItems = 12;
 
-    //create square position buffer
+    //create cube position buffer
     cubeVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
 
@@ -144,26 +147,27 @@ function initBuffers() {
     cubeVertexPositionBuffer.itemSize = 3;
     cubeVertexPositionBuffer.numItems = 24;
 
-    //create square color buffer
+    //create cube color buffer
     cubeVertexColorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
     colors = [
-        [0.4, 1.0, 0.4, 1.0],     // Front face
-        [0.4, 1.0, 0.4, 1.0],     // Back face
-        [0.4, 0.0, 0.4, 1.0],     // Top face
-        [1.0, 1.0, 0.4, 1.0],     // Bottom face
-        [0.4, 1.0, 1.0, 1.0],     // Right face
-        [0.4, 1.0, 1.0, 1.0]     // Left face
+        [1.0, 0.0, 0.0, 1.0], // Front face
+        [1.0, 1.0, 0.0, 1.0], // Back face
+        [0.0, 1.0, 0.0, 1.0], // Top face
+        [1.0, 0.5, 0.5, 1.0], // Bottom face
+        [1.0, 0.0, 1.0, 1.0], // Right face
+        [0.0, 0.0, 1.0, 1.0]  // Left face
     ];
+    var generatedColors = [];
 
-    var unpackedColors = [];
-    for (var i in colors) {
-        var color = colors[i];
-        for (var j=0; j < 4; j++) {
-            unpackedColors = unpackedColors.concat(color);
+    for (var j=0; j<6; j++) {
+        var c = colors[j];
+
+        for (var i=0; i<4; i++) {
+            generatedColors = generatedColors.concat(c);
         }
     }
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unpackedColors), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(generatedColors), gl.STATIC_DRAW);
     cubeVertexColorBuffer.itemSize = 4;
     cubeVertexColorBuffer.numItems = 24;
 
@@ -179,8 +183,8 @@ function initBuffers() {
         20, 21, 22,     20, 22, 23    // links
     ];
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
-    cubeVertexIndices.itemSize = 1;
-    cubeVertexIndices.numItems = 36;
+    cubeVertexIndexBuffer.itemSize = 1;
+    cubeVertexIndexBuffer.numItems = 36;
 }
 
 //draw all elements to canvas
@@ -225,6 +229,11 @@ function drawScene() {
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
     gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
+    //indices
+    if(once){
+        console.log(cubeVertexIndexBuffer);
+        once = false;
+    }
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
     setMatrixUniforms();
     gl.drawElements(gl.TRIANGLES, cubeVertexIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
