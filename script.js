@@ -24,7 +24,7 @@ var pMatrix = mat4.identity(mat4.create());
 var shaderProgram;
 
 //rotation
-var tilt = 90;
+var tilt = 45;
 
 //distance to object
 var z = -15.0;
@@ -38,8 +38,8 @@ var mvMatrixStack = [];
 var cWidth = 2;
 
 //grid
-var gWidth = 10;
-var gHeight = 10;
+var gWidth = 5;
+var gHeight = 5;
 
 //picking
 var pickerTexture;
@@ -424,7 +424,7 @@ function render() {
     drawScene();
 
     //on-screen rendering
-    gl.uniform1i(shaderProgram.offscreenUniform, false);
+    gl.uniform1i(shaderProgram.offscreenUniform, true);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     drawScene();
 }
