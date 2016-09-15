@@ -424,7 +424,7 @@ function render() {
     drawScene();
 
     //on-screen rendering
-    gl.uniform1i(shaderProgram.offscreenUniform, true);
+    gl.uniform1i(shaderProgram.offscreenUniform, false);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     drawScene();
 }
