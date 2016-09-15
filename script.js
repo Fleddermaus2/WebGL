@@ -29,9 +29,6 @@ var tilt = 90;
 //distance to object
 var z = -15.0;
 
-//objectTexture
-var objectTexture;
-
 //keys
 var currentlyPressedKey = {};
 
@@ -41,13 +38,14 @@ var mvMatrixStack = [];
 var cWidth = 2;
 
 //grid
-var gWidth = 1;
-var gHeight = 1;
+var gWidth = 10;
+var gHeight = 10;
 
 //picking
 var pickerTexture;
 var pickerRenderBuffer;
 var pickerFrameBuffer;
+var colorSet = {};
 
 //initialise gl
 function initGL(canvas) {
@@ -200,7 +198,7 @@ function handleMouse() {
 
         //remove scrolling
         left += window.pageXOffset;
-        top -= window-pageYOffset;
+        top -= window.pageYOffset;
 
         //calculate canvas coordinates
         x = ev.clientX - left;
@@ -212,11 +210,11 @@ function handleMouse() {
         gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, readout);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-        var pickedObject = null, ob = null;
+        var ob = null;
         for(var i = 0; i < cubes.length; i++){
             ob = cubes[i];
             if(compare(readout, ob.diffuse)){
-                pickedObject = ob;
+                handlePickedObject(ob);
                 break;
             }
         }
@@ -307,22 +305,20 @@ function drawCube() {
 }
 
 class Cube{
-    constructor(xPos, zPos){
-        this.x = xPos;
-        this.z = zPos;
+    constructor(position){
+        this.position = position;
         //set colors to a starting value
         this.randomiseColors();
-        this.diffuse = [this.r, this.g, this.b, 1.0];
     }
 
     draw(){
         mvPushMatrix();
 
         //move to cubes position
-        mat4.translate(mvMatrix, mvMatrix, [this.x, 0.0, this.z]);
+        mat4.translate(mvMatrix, mvMatrix, this.position);
 
         //draw star in main color
-        gl.uniform3f(shaderProgram.colorUniform, this.r, this.g, this.b);
+        gl.uniform3f(shaderProgram.colorUniform, this.diffuse[0], this.diffuse[1], this.diffuse[2]);
         drawCube();
 
         mvPopMatrix();
@@ -330,9 +326,16 @@ class Cube{
 
     randomiseColors(){
         //give star color
-        this.r = Math.random();
-        this.g = Math.random();
-        this.b = Math.random();
+        var color = [Math.random(), Math.random(), Math.random()];
+        var key = color[0] + ":" + color[1] + ":" + color[2];
+
+        if(key in colorSet){
+            this.randomiseColors();
+        }else{
+            colorSet[key] = true;
+            this.diffuse = color;
+        }
+
     }
 }
 
@@ -342,7 +345,7 @@ function initWorldObjects() {
             //Half of Grid - loop integer - half cube width
             var x = (gWidth/2) - i - (cWidth/2);
             var z = (gWidth/2) - j - (cWidth/2);
-            cubes.push(new Cube(x, z));
+            cubes.push(new Cube([x, 0.0, z]));
         }
     }
 }
@@ -417,10 +420,21 @@ function render() {
     //off-screen rendering
     gl.bindFramebuffer(gl.FRAMEBUFFER, pickerFrameBuffer);
     gl.uniform1i(shaderProgram.offscreenUniform, true);
+
     drawScene();
 
     //on-screen rendering
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.uniform1i(shaderProgram.offscreenUniform, false);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     drawScene();
+}
+
+function handlePickedObject(hit) {
+    console.log("handle picked object");
+    var moveY = [0.0, 1.0, 0.0];
+    console.log("Position: " + hit.position);
+    vec3.add(hit.position, hit.position, moveY);
+    console.log("Position: " + hit.position);
+
+    render();
 }

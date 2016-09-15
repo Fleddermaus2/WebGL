@@ -16,6 +16,8 @@
     void main(void) {
         if(!uOffscreen){
             gl_FragColor = vColor * vec4(uColor, 1.0);
+        }else{
+            gl_FragColor = vec4(uColor, 1.0);
         }
     }
     </script>
