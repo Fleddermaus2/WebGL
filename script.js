@@ -405,12 +405,6 @@ class Program{
             cubes[i].draw();
         }
     }
-
-    tick() {
-        requestAnimationFrame(this.tick);
-        input.handleInput();
-        picker.render();
-    }
 }
 
 class Utils{
@@ -461,11 +455,11 @@ function initWorldObjects(gWidth, gHeight, cWidth) {
 function webGL() {
     canvas = document.getElementById("canvas");
     utils = new Utils();
+    input = new Input();
     program = new Program(canvas);
     initBuffers();
     shader = new Shader();
     picker = new Picker();
-    input = new Input();
     initWorldObjects(gWidth, gHeight, cWidth);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -473,5 +467,11 @@ function webGL() {
     gl.depthFunc(gl.LEQUAL);
 
     //draw regularly
-    program.tick();
+    tick();
+}
+
+function tick() {
+    requestAnimationFrame(tick);
+    input.handleInput();
+    picker.render();
 }
