@@ -38,8 +38,8 @@ var cScale = 1.5;
 var cWidth = 2 * cScale;
 
 //grid
-var gWidth = 10 * cWidth;
-var gHeight = 10 * cWidth;
+var gWidth = 5 * cWidth;
+var gHeight = 5 * cWidth;
 
 //input
 //changes context so can't be used with this
@@ -289,18 +289,22 @@ class Input{
             }
 
             //remove scrolling
-            left += window.pageXOffset;
+            left -= window.pageXOffset;
             top -= window.pageYOffset;
 
             //calculate canvas coordinates
             x = ev.clientX - left;
             y = height - (ev.clientY - top);
 
+            console.log("Position: " + x + " / " + y);
+
             //read one pixel with RGBA
             var readout = new Uint8Array(1 * 1 * 4);
             gl.bindFramebuffer(gl.FRAMEBUFFER, picker.pickerFrameBuffer);
             gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, readout);
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+            console.log("Readout: " + readout);
 
             var ob = null;
             for(var i = 0; i < cubes.length; i++){
