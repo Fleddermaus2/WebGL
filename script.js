@@ -296,15 +296,11 @@ class Input{
             x = ev.clientX - left;
             y = height - (ev.clientY - top);
 
-            console.log("Position: " + x + " / " + y);
-
             //read one pixel with RGBA
             var readout = new Uint8Array(1 * 1 * 4);
             gl.bindFramebuffer(gl.FRAMEBUFFER, picker.pickerFrameBuffer);
             gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, readout);
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-            console.log("Readout: " + readout);
 
             var ob = null;
             for(var i = 0; i < cubes.length; i++){
