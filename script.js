@@ -60,14 +60,14 @@ function initBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
 
     var vertices = [
-        -1.0 * cScale,  -1.0 * cScale,  -1.0 * cScale, //0
-        1.0 * cScale, -1.0 * cScale,  -1.0 * cScale, //1
-        1.0 * cScale,  1.0 * cScale, -1.0 * cScale, //2
-        -1.0 * cScale,  1.0 * cScale,  -1.0 * cScale, //3
-        -1.0 * cScale, -1.0 * cScale,  1.0 * cScale, //4
-        1.0 * cScale,  -1.0 * cScale, 1.0 * cScale, //5
-        1.0 * cScale, 1.0 * cScale,  1.0 * cScale, //6
-        -1.0 * cScale,  1.0 * cScale, 1.0 * cScale //7
+        -cScale,  -cScale,  -cScale, //0
+        cScale, -cScale,  -cScale, //1
+        cScale,  cScale, -cScale, //2
+        -cScale,  cScale,  -cScale, //3
+        -cScale, -cScale,  cScale, //4
+        cScale,  -cScale, cScale, //5
+        cScale, cScale,  cScale, //6
+        -cScale,  cScale, cScale //7
     ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
