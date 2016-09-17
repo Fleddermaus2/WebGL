@@ -24,18 +24,26 @@ var pMatrix = mat4.identity(mat4.create());
 var shaderProgram;
 
 //rotation
-var tilt = 45;
+var xRot = 45;
+var zRot = 0;
+var yRot = 0;
 
 //distance to object
-var z = -15.0;
+var z = -25.0;
 
 //objects
 var cubes = [];
-var cWidth = 2;
+//standard cube is 2 units (cScale = 1)
+var cScale = 1.5;
+var cWidth = 2 * cScale;
 
 //grid
-var gWidth = 5;
-var gHeight = 5;
+var gWidth = 10 * cWidth;
+var gHeight = 10 * cWidth;
+
+//input
+//changes context so can't be used with this
+var currentlyPressedKey = {};
 
 //classes
 var picker;
@@ -52,14 +60,14 @@ function initBuffers() {
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
 
     var vertices = [
-        -1.0,  -1.0,  -1.0, //0
-        1.0, -1.0,  -1.0, //1
-        1.0,  1.0, -1.0, //2
-        -1.0,  1.0,  -1.0, //3
-        -1.0, -1.0,  1.0, //4
-        1.0,  -1.0, 1.0, //5
-        1.0, 1.0,  1.0, //6
-        -1.0,  1.0, 1.0 //7
+        -1.0 * cScale,  -1.0 * cScale,  -1.0 * cScale, //0
+        1.0 * cScale, -1.0 * cScale,  -1.0 * cScale, //1
+        1.0 * cScale,  1.0 * cScale, -1.0 * cScale, //2
+        -1.0 * cScale,  1.0 * cScale,  -1.0 * cScale, //3
+        -1.0 * cScale, -1.0 * cScale,  1.0 * cScale, //4
+        1.0 * cScale,  -1.0 * cScale, 1.0 * cScale, //5
+        1.0 * cScale, 1.0 * cScale,  1.0 * cScale, //6
+        -1.0 * cScale,  1.0 * cScale, 1.0 * cScale //7
     ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -108,6 +116,7 @@ function initBuffers() {
     cubeVertexIndexBuffer.numItems = 36;
 }
 
+//Cube object
 class Cube{
     constructor(position){
         this.position = position;
@@ -162,6 +171,7 @@ class Cube{
     }
 }
 
+//picker for selecting objects
 class Picker{
     constructor(){
         this.pickerTexture = '';
@@ -212,21 +222,20 @@ class Picker{
     }
 }
 
+//all input functions
 class Input{
     constructor(){
-        this.currentlyPressedKey = {};
-
         document.onkeydown = this.handleKeyDown;
         document.onkeyup = this.handleKeyUp;
     }
 
     //dictionary for pressed keys
     handleKeyDown(event) {
-        this.currentlyPressedKey[event.keyCode] = true;
+        currentlyPressedKey[event.keyCode] = true;
     }
 
     handleKeyUp(event) {
-        this.currentlyPressedKey[event.keyCode] = false;
+        currentlyPressedKey[event.keyCode] = false;
     }
 
     handleInput(){
@@ -235,21 +244,37 @@ class Input{
     }
 
     handleKeys() {
-        if(this.currentlyPressedKey[81]){
-            //Page Up
-            z -= 0.05;
+        if(currentlyPressedKey[81]){
+            //Q
+            yRot -= 1;
         }
-        if(this.currentlyPressedKey[69]){
-            //Page Down
-            z += 0.05;
+        if(currentlyPressedKey[69]){
+            //E
+            yRot += 1;
         }
-        if(this.currentlyPressedKey[87]){
-            //Up cursor speed
-            tilt -= 1;
+        if(currentlyPressedKey[87]){
+            //W
+            xRot -= 1;
         }
-        if(this.currentlyPressedKey[83]){
-            //Down cursor speed
-            tilt += 1;
+        if(currentlyPressedKey[83]){
+            //S
+            xRot += 1;
+        }
+        if(currentlyPressedKey[65]){
+            //A
+            zRot -= 1;
+        }
+        if(currentlyPressedKey[68]){
+            //D
+            zRot += 1;
+        }
+        if(currentlyPressedKey[82]){
+            //R
+            z -= 0.1;
+        }
+        if(currentlyPressedKey[70]){
+            //F
+            z += 0.1;
         }
     }
 
@@ -289,6 +314,7 @@ class Input{
     }
 }
 
+//initialise Shader
 class Shader{
     constructor(){
         this.initShaders();
@@ -364,6 +390,7 @@ class Shader{
     }
 }
 
+//initGL and drawScene
 class Program{
     constructor(canvas){
         this.initGL(canvas);
@@ -383,9 +410,6 @@ class Program{
         if(!gl){
             alert("Couldn't initialise WebGL.");
         }
-
-        gWidth = gWidth * 2;
-        gHeight = gHeight * 2;
     }
 
     //draw all elements to canvas
@@ -393,13 +417,15 @@ class Program{
         //camera
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        mat4.perspective(pMatrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
+        mat4.perspective(pMatrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 1000.0);
 
         mat4.identity(mvMatrix);
         mat4.translate(mvMatrix, mvMatrix, [0.0, 0, z]);
 
         //rotate
-        mat4.rotate(mvMatrix, mvMatrix, utils.degToRad(tilt), [1, 0, 0]);
+        mat4.rotate(mvMatrix, mvMatrix, utils.degToRad(xRot), [1, 0, 0]);
+        mat4.rotate(mvMatrix, mvMatrix, utils.degToRad(zRot), [0, 0, 1]);
+        mat4.rotate(mvMatrix, mvMatrix, utils.degToRad(yRot), [0, 1, 0]);
 
         for(var i in cubes){
             cubes[i].draw();
@@ -407,6 +433,7 @@ class Program{
     }
 }
 
+//often used functions
 class Utils{
     constructor(){
         this.mvMatrixStack = [];
@@ -430,11 +457,8 @@ class Utils{
     }
 
     handlePickedObject(hit) {
-        console.log("handle picked object");
         var moveY = [0.0, 1.0, 0.0];
-        console.log("Position: " + hit.position);
         vec3.add(hit.position, hit.position, moveY);
-        console.log("Position: " + hit.position);
 
         picker.render();
     }
