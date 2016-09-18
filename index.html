@@ -3,21 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <script type="text/javascript" src="gl-matrix.js"></script>
+    <script type="text/javascript" src="Picker.js"></script>
+    <script type="text/javascript" src="Cube.js"></script>
+    <script type="text/javascript" src="Program.js"></script>
+    <script type="text/javascript" src="Shader.js"></script>
+    <script type="text/javascript" src="Input.js"></script>
+    <script type="text/javascript" src="Utils.js"></script>
     <script type="text/javascript" src="script.js"></script>
 
     <script id="shader-fs" type="x-shader/x-fragment">
     precision mediump float;
 
     uniform vec3 uColor;
+    uniform vec3 uPColor;
     uniform bool uOffscreen;
 
     varying vec4 vColor;
 
     void main(void) {
-        if(!uOffscreen){
-            gl_FragColor = vColor * vec4(uColor, 1.0);
+        if(uOffscreen){
+            gl_FragColor = vec4(uPColor, 1.0);
         }else{
-            gl_FragColor = vec4(uColor, 1.0);
+            gl_FragColor = vColor * vec4(uColor, 1.0);
         }
     }
     </script>
@@ -41,6 +48,7 @@
 <body onload="webGL();">
 <canvas id="canvas" style="border: none;" width="1920" height="1080"></canvas>
 <br />
-(Use wasd keys to spin the box and <code>e</code>/<code>q</code> to zoom out/in)
+WASD and Q/E to turn and rotate<br>
+R and F to zoom
 </body>
 </html>
