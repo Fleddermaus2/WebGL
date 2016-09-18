@@ -123,7 +123,7 @@ function initWorldObjects(gWidth, gHeight, cWidth) {
         for(var j = 0; j < gHeight; j += cWidth){
             //Half of Grid - loop integer - half cube c_width
             var x = (gWidth/2) - i - (cWidth/2);
-            var z = (gWidth/2) - j - (cWidth/2);
+            var z = (gHeight/2) - j - (cWidth/2);
             cubes.push(new Cube([x, 0.0, z]));
         }
     }
