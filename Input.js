@@ -70,7 +70,7 @@ class Input{
 
             //calculate canvas coordinates
             x = ev.clientX - left;
-            y = height - (ev.clientY - top);
+            y = c_height - (ev.clientY - top);
 
             //read one pixel with RGBA
             var readout = new Uint8Array(1 * 1 * 4);

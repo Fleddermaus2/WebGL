@@ -8,10 +8,8 @@ class Program{
     initGL(canvas) {
         try{
             gl = canvas.getContext("webgl");
-            gl.viewportWidth = canvas.width;
-            width = canvas.width;
-            gl.viewportHeight = canvas.height;
-            height = canvas.height;
+            c_width = canvas.width;
+            c_height = canvas.height;
         }catch(e){
         }
 
@@ -23,9 +21,9 @@ class Program{
     //draw all elements to canvas
     drawScene(offscreen) {
         //camera
-        gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+        gl.viewport(0, 0, c_width, c_height);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        mat4.perspective(pMatrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 1000.0);
+        mat4.perspective(pMatrix, 45, c_width / c_height, 0.1, 1000.0);
 
         mat4.identity(mvMatrix);
         mat4.translate(mvMatrix, mvMatrix, [0.0, 0, z]);

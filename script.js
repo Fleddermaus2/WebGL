@@ -5,8 +5,8 @@ var gl;
 var canvas;
 
 //screen
-var width;
-var height;
+var c_width;
+var c_height;
 
 //buffer for positions
 var cubeVertexPositionBuffer;
@@ -53,7 +53,7 @@ var program;
 var input;
 
 //initialise buffers
-function initBuffers() {
+function initBuffers(cScale) {
 
     //create cube position buffer
     cubeVertexPositionBuffer = gl.createBuffer();
@@ -117,9 +117,11 @@ function initBuffers() {
 }
 
 function initWorldObjects(gWidth, gHeight, cWidth) {
+    $("#count").text(((gWidth/cWidth) * (gHeight/cWidth)).toString());
+
     for(var i = 0; i < gWidth; i += cWidth){
         for(var j = 0; j < gHeight; j += cWidth){
-            //Half of Grid - loop integer - half cube width
+            //Half of Grid - loop integer - half cube c_width
             var x = (gWidth/2) - i - (cWidth/2);
             var z = (gWidth/2) - j - (cWidth/2);
             cubes.push(new Cube([x, 0.0, z]));
@@ -133,7 +135,7 @@ function webGL() {
     utils = new Utils();
     input = new Input();
     program = new Program(canvas);
-    initBuffers();
+    initBuffers(cScale);
     shader = new Shader();
     picker = new Picker();
     initWorldObjects(gWidth, gHeight, cWidth);
@@ -149,5 +151,35 @@ function webGL() {
 function tick() {
     requestAnimationFrame(tick);
     input.handleInput();
+    picker.render();
+}
+
+function handleForm() {
+    var xGrid = $("#xGrid").val();
+    if(gWidth <= 0){
+        xGrid = 1;
+        $("#xGrid").val(1);
+    }
+
+    var yGrid = $("#yGrid").val();
+
+    if(yGrid <= 0){
+        yGrid = 1;
+        $("#yGrid").val(1);
+    }
+
+    cScale = $("#cScale").val();
+
+    if(cScale <= 0){
+        cScale = 1;
+        $("#cScale").val(1);
+    }
+
+    cubes = [];
+    cWidth = 2 * cScale;
+    gWidth = xGrid * cWidth;
+    gHeight = yGrid * cWidth;
+    initBuffers(cScale);
+    initWorldObjects(gWidth, gHeight, cWidth);
     picker.render();
 }

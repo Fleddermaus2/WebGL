@@ -13,11 +13,11 @@ class Picker{
         //create texture to store colors
         this.pickerTexture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, this.pickerTexture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, c_width, c_height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
         //create renderbuffer for depth information
         this.pickerRenderBuffer = gl.createRenderbuffer();
         gl.bindRenderbuffer(gl.RENDERBUFFER, this.pickerRenderBuffer);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, width, height);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, c_width, c_height);
         //Framebuffer with texture and renderbuffer
         this.pickerFrameBuffer = gl.createFramebuffer();
         gl.bindFramebuffer(gl.FRAMEBUFFER, this.pickerFrameBuffer);

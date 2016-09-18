@@ -3622,7 +3622,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * @param {mat4} out mat4 frustum matrix will be written into
 	 * @param {number} fovy Vertical field of view in radians
-	 * @param {number} aspect Aspect ratio. typically viewport width/height
+	 * @param {number} aspect Aspect ratio. typically viewport c_width/c_height
 	 * @param {number} near Near bound of the frustum
 	 * @param {number} far Far bound of the frustum
 	 * @returns {mat4} out
