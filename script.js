@@ -57,7 +57,7 @@ function webGL() {
     program = new Program(canvas);
     shader = new Shader();
     picker = new Picker();
-    initWorldObjects(2, 2);
+    initWorldObjects(4,4);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);

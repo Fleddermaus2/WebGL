@@ -46,11 +46,11 @@ class Input{
         }
         if(currentlyPressedKey[82]){
             //R
-            z -= 0.5;
+            z -= 0.1;
         }
         if(currentlyPressedKey[70]){
             //F
-            z += 0.5;
+            z += 0.1;
         }
     }
 

@@ -2,7 +2,7 @@
 class Grid{
     constructor(xGrid, yGrid){
         this.position = [0.0, 0.0, 0.0];
-        this.diffuse = [Math.random(), Math.random(), Math.random()];
+        this.diffuse = [1.0, 1.0, 1.0];
         //set colors to a starting value
         this.randomiseColors();
         this.initBuffers(xGrid, yGrid);
@@ -59,10 +59,9 @@ class Grid{
     //initialise buffers
     initBuffers(xGrid, yGrid) {
 
-        var aVertices = 0, bVertices, drawnSquares = 0, numVertices, numSquares;
+        var aVertices = 0, bVertices, drawnSquares = 0, numVertices, numSquares, nextRow = true;
         numSquares = xGrid * yGrid;
-        numVertices = 2 + 2 * numSquares;
-        numVertices = 9;
+        numVertices = ((1+xGrid) * (1+yGrid));
         bVertices = 1 + yGrid;
         console.log(numVertices);
 
@@ -73,7 +72,7 @@ class Grid{
         var vertices = [];
         for(let i = 0; i < 1 + xGrid; i++){
             for(let j = 0; j < 1 + yGrid; j++){
-                vertices.push(i, 0, j);
+                vertices.push(i-(xGrid/2), 0, j-(yGrid/2));
             }
         }
 
@@ -95,7 +94,10 @@ class Grid{
         var color = [];
 
         for(let i = 0; i < numVertices; i++){
-            color.push(1, 1, 1, 1);
+            let r = Math.random();
+            let g = Math.random();
+            let b = Math.random();
+            color.push(r, g, b, 1.0);
         }
 
         output = "";
@@ -114,17 +116,18 @@ class Grid{
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gridVertexIndexBuffer);
         var vertexIndices = [];
 
+        let row = 1;
         while(drawnSquares < numSquares){
-            console.log(aVertices + " " + bVertices);
 
-            if(aVertices >= yGrid){
-                vertexIndices.push(aVertices, aVertices+1, bVertices);
-                vertexIndices.push(aVertices+1, bVertices, bVertices+yGrid);
-            }else{
-                vertexIndices.push(aVertices, aVertices+1, bVertices);
-                vertexIndices.push(aVertices+1, bVertices, bVertices+1);
-            }
+            vertexIndices.push(aVertices, aVertices+1, bVertices);
+            vertexIndices.push(aVertices+1, bVertices, bVertices+1);
+
             aVertices++;
+            if(aVertices == yGrid*row+(row-1)){
+                aVertices++;
+                bVertices++;
+                row++;
+            }
             bVertices++;
             drawnSquares++;
         }
@@ -135,6 +138,7 @@ class Grid{
             output += " ";
         }
         console.log(output);
+        console.log(vertexIndices.length);
 
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndices), gl.STATIC_DRAW);
         gridVertexIndexBuffer.itemSize = 1;
