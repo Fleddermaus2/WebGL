@@ -79,7 +79,7 @@ class Input{
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
             var ob = null;
-            for(var i = 0; i < cubes.length; i++){
+            for(var i = 0; i < grid.length; i++){
                 ob = cubes[i];
                 if(picker.compare(readout, ob.cPicker)){
                     utils.handlePickedObject(ob);

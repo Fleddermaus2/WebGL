@@ -33,8 +33,6 @@ class Program{
         mat4.rotate(mvMatrix, mvMatrix, utils.degToRad(zRot), [0, 0, 1]);
         mat4.rotate(mvMatrix, mvMatrix, utils.degToRad(yRot), [0, 1, 0]);
 
-        for(var i in cubes){
-            cubes[i].draw(offscreen);
-        }
+        grid.draw(offscreen);
     }
 }
