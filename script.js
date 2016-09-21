@@ -9,11 +9,13 @@ var c_width;
 var c_height;
 
 //buffer for positions
-var cubeVertexPositionBuffer;
+var cubePositionBuffer;
 //buffer for color coordinates
-var cubeVertexColorBuffer;
+var cubeColorBuffer;
 //buffer for indices
-var cubeVertexIndexBuffer;
+var cubeIndexBuffer;
+//buffer for normals
+var cubeNormalBuffer;
 
 //model-view-matrix
 var mvMatrix = mat4.identity(mat4.create());
@@ -56,8 +58,8 @@ var input;
 function initBuffers(cScale) {
 
     //create cube position buffer
-    cubeVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
+    cubePositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubePositionBuffer);
 
     var vertices = [
         -cScale,  -cScale,  -cScale, //0
@@ -71,13 +73,58 @@ function initBuffers(cScale) {
     ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    cubePositionBuffer.itemSize = 3;
+    cubePositionBuffer.numItems = 8;
 
-    cubeVertexPositionBuffer.itemSize = 3;
-    cubeVertexPositionBuffer.numItems = 24;
+    //normals buffer
+    cubeNormalBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeNormalBuffer);
+
+    var normals = [
+        // front
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+        0.0,  0.0,  1.0,
+
+        // back
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+        0.0,  0.0, -1.0,
+
+        // top
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+        0.0,  1.0,  0.0,
+
+        // bottom
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+        0.0, -1.0,  0.0,
+
+        // right
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+        1.0,  0.0,  0.0,
+
+        // left
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0,
+        -1.0,  0.0,  0.0
+    ];
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+    cubeNormalBuffer.itemSize = 3;
+    cubeNormalBuffer.numItems = 24;
 
     //create cube color buffer
-    cubeVertexColorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexColorBuffer);
+    cubeColorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
 
     var color = [
         1.0, 1.0, 1.0, 1.0,
@@ -91,29 +138,29 @@ function initBuffers(cScale) {
     ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(color), gl.STATIC_DRAW);
-    cubeVertexColorBuffer.itemSize = 3;
-    cubeVertexColorBuffer.numItems = 8;
+    cubeColorBuffer.itemSize = 4;
+    cubeColorBuffer.numItems = 8;
 
     //index buffer
-    cubeVertexIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
+    cubeIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
     var cubeVertexIndices = [
         0, 1, 3, //Front
         1, 2, 3, //Front
-        1, 5, 6, //Right
-        1, 6, 2, //Right
         5, 4, 7, //Back
         5, 6, 7, //Back
-        4, 0, 3, //Left
-        4, 3, 7, //Left
         3, 2, 6, //Top
         3, 6, 7, //Top
         0, 1, 5, //Bottom
-        0, 5, 4 //Bottom
+        0, 5, 4, //Bottom
+        1, 5, 6, //Right
+        1, 6, 2, //Right
+        4, 0, 3, //Left
+        4, 3, 7 //Left
     ];
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
-    cubeVertexIndexBuffer.itemSize = 1;
-    cubeVertexIndexBuffer.numItems = 36;
+    cubeIndexBuffer.itemSize = 1;
+    cubeIndexBuffer.numItems = 36;
 }
 
 function initWorldObjects(gWidth, gHeight, cWidth) {

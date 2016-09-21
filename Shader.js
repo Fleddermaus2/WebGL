@@ -60,17 +60,21 @@ class Shader{
 
         gl.useProgram(shaderProgram);
 
-        //vertexPositionAttribute custom attribute for easier use
+        //get Uniforms from Shader Code
         shaderProgram.vertexPositionAttribute  = gl.getAttribLocation(shaderProgram, "aVertexPosition");
         gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+        shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
+        gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
 
         shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
         gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
 
         shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
         shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+        shaderProgram.normalMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
         shaderProgram.colorUniform = gl.getUniformLocation(shaderProgram, "uColor");
         shaderProgram.pickerColorUniform = gl.getUniformLocation(shaderProgram, "uPColor");
-        shaderProgram.offscreenUniform = gl.getUniformLocation(shaderProgram, "uOffscreen")
+        shaderProgram.offscreenUniform = gl.getUniformLocation(shaderProgram, "uOffscreen");
     }
 }
