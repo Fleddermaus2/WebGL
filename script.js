@@ -17,6 +17,9 @@ var cubeIndexBuffer;
 //buffer for normals
 var cubeNormalBuffer;
 
+//buffer for outlines
+var outlineIndexBuffer;
+
 //model-view-matrix
 var mvMatrix = mat4.identity(mat4.create());
 //projection matrix
@@ -161,6 +164,19 @@ function initBuffers(cScale) {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
     cubeIndexBuffer.itemSize = 1;
     cubeIndexBuffer.numItems = 36;
+
+    //outline index buffer
+    outlineIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, outlineIndexBuffer);
+    var outlineVertexIndices = [
+        0, 1, 0, 3, 0, 4,
+        2, 1, 2, 3, 2, 6,
+        5, 1, 5, 4, 5, 6,
+        7, 3, 7, 4, 7, 6
+    ];
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(outlineVertexIndices), gl.STATIC_DRAW);
+    outlineIndexBuffer.itemSize = 1;
+    outlineIndexBuffer.numItems = outlineVertexIndices.length;
 }
 
 function initWorldObjects(gWidth, gHeight, cWidth) {

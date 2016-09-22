@@ -2,7 +2,8 @@
 class Cube{
     constructor(position){
         this.position = position;
-        this.diffuse = [Math.random(), Math.random(), Math.random()];
+        //this.diffuse = [Math.random(), Math.random(), Math.random()];
+        this.diffuse = [0.4, 1.0, 0.4];
         //set colors to a starting value
         this.randomiseColors();
     }
@@ -13,6 +14,7 @@ class Cube{
         //move to cubes position
         mat4.translate(mvMatrix, mvMatrix, this.position);
 
+        gl.uniform1i(shaderProgram.outlineUniform, false);
         //draw cube in main color
         if(offscreen){
             gl.uniform3f(shaderProgram.pickerColorUniform, this.cPicker[0], this.cPicker[1], this.cPicker[2]);
@@ -35,13 +37,17 @@ class Cube{
         //set Matrix Uniform
         gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
         gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
-
+        //calculate Normal Matrix
         let normalMatrix = mat4.create();
         mat4.invert(normalMatrix, mvMatrix);
         mat4.transpose(normalMatrix, normalMatrix);
         gl.uniformMatrix4fv(shaderProgram.normalMatrixUniform, false, normalMatrix);
 
         gl.drawElements(gl.TRIANGLES, cubeIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+        //switch to outlines
+        gl.uniform1i(shaderProgram.outlineUniform, true);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, outlineIndexBuffer);
+        gl.drawElements(gl.LINES, outlineIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 
         //clean up
         gl.bindBuffer(gl.ARRAY_BUFFER, null);

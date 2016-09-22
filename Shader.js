@@ -76,5 +76,6 @@ class Shader{
         shaderProgram.colorUniform = gl.getUniformLocation(shaderProgram, "uColor");
         shaderProgram.pickerColorUniform = gl.getUniformLocation(shaderProgram, "uPColor");
         shaderProgram.offscreenUniform = gl.getUniformLocation(shaderProgram, "uOffscreen");
+        shaderProgram.outlineUniform = gl.getUniformLocation(shaderProgram, "uOutline");
     }
 }
