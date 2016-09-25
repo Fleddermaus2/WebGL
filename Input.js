@@ -56,36 +56,45 @@ class Input{
 
     handleMouse() {
         canvas.onmouseup = function (ev) {
-            //clientX and clientY calculate from top left of browser
-            var x, y, top = 0, left = 0, obj = canvas;
-            while(obj && obj.tagName !== 'Body'){
-                top += obj.offsetTop;
-                left += obj.offsetLeft;
-                obj = obj.offsetParent;
-            }
+            //left mouse button
+            if(ev.which == 1){
+                console.log("Mouse Event");
+                //clientX and clientY calculate from top left of browser
+                var x, y, top = 0, left = 0, obj = canvas;
+                while(obj && obj.tagName !== 'Body'){
+                    top += obj.offsetTop;
+                    left += obj.offsetLeft;
+                    obj = obj.offsetParent;
+                }
 
-            //remove scrolling
-            left -= window.pageXOffset;
-            top -= window.pageYOffset;
+                //remove scrolling
+                left -= window.pageXOffset;
+                top -= window.pageYOffset;
 
-            //calculate canvas coordinates
-            x = ev.clientX - left;
-            y = c_height - (ev.clientY - top);
+                //calculate canvas coordinates
+                x = ev.clientX - left;
+                y = c_height - (ev.clientY - top);
 
-            //read one pixel with RGBA
-            var readout = new Uint8Array(1 * 1 * 4);
-            gl.bindFramebuffer(gl.FRAMEBUFFER, picker.pickerFrameBuffer);
-            gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, readout);
-            gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+                //read one pixel with RGBA
+                var readout = new Uint8Array(50 * 50 * 4);
+                gl.bindFramebuffer(gl.FRAMEBUFFER, picker.pickerFrameBuffer);
+                gl.readPixels(x, y, 50, 50, gl.RGBA, gl.UNSIGNED_BYTE, readout);
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-            var ob = null;
-            for(var i = 0; i < cubes.length; i++){
-                ob = cubes[i];
-                if(picker.compare(readout, ob.cPicker)){
-                    utils.handlePickedObject(ob);
-                    break;
+                readout = utils.cleanArray(readout);
+                readout = utils.filterUnique(readout);
+                console.log(readout.length);
+
+                var ob = null;
+                for(var i = 0; i < cubes.length; i++){
+                    ob = cubes[i];
+                    if(picker.compare(readout, ob.cPicker)){
+                        utils.handlePickedObject(ob);
+                    }
                 }
             }
+            //right mouse button
+            else if(ev.which == 3){}
         }
     }
 }

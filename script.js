@@ -207,6 +207,9 @@ function webGL() {
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
 
+    //remove context menu on canvas
+    $('body').on('contextmenu', '#canvas', function(e){ return false; });
+
     //draw regularly
     tick();
 }

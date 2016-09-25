@@ -44,6 +44,12 @@ class Picker{
 
     //compare pixel with label; scale diffuse [0,1] to [0,255]
     compare(readout, color) {
-        return(Math.abs(Math.round(color[0]*255) - readout[0]) <= 1 && Math.abs(Math.round(color[1]*255) - readout[1]) <= 1 && Math.abs(Math.round(color[2]*255) - readout[2]) <= 1);
+        let compare;
+        for(let i in readout){
+            compare = readout[i];
+            if(Math.abs(Math.round(color[0]*255) - compare[0]) <= 1 && Math.abs(Math.round(color[1]*255) - compare[1]) <= 1 && Math.abs(Math.round(color[2]*255) - compare[2]) <= 1){
+                return true;
+            }
+        }
     }
 }
