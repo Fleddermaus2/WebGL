@@ -3,7 +3,7 @@ class Cube{
     constructor(position){
         this.position = position;
         //this.diffuse = [Math.random(), Math.random(), Math.random()];
-        this.diffuse = [0.4, 1.0, 0.4];
+        this.diffuse = [0.3, 1.0, 0.3];
         //set colors to a starting value
         this.randomiseColors();
     }
@@ -27,8 +27,8 @@ class Cube{
         gl.bindBuffer(gl.ARRAY_BUFFER, cubePositionBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubePositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
         //normals
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeNormalBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, cubeNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        //gl.bindBuffer(gl.ARRAY_BUFFER, cubeNormalBuffer);
+        //gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, cubeNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
         //color
         gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, cubeColorBuffer.itemSize, gl.FLOAT, false, 0, 0);

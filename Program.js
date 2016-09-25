@@ -8,8 +8,7 @@ class Program{
     initGL(canvas) {
         try{
             gl = canvas.getContext("webgl");
-            c_width = canvas.width;
-            c_height = canvas.height;
+            this.resize(canvas);
         }catch(e){
         }
 
@@ -21,7 +20,8 @@ class Program{
     //draw all elements to canvas
     drawScene(offscreen) {
         //camera
-        gl.viewport(0, 0, c_width, c_height);
+        this.resize(canvas);
+
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         mat4.perspective(pMatrix, 45, c_width / c_height, 0.1, 1000.0);
 
@@ -35,6 +35,21 @@ class Program{
 
         for(var i in cubes){
             cubes[i].draw(offscreen);
+        }
+    }
+
+    //check if size changed and apply new sizes
+    resize(canvas){
+        let clientWidth = canvas.clientWidth;
+        let clientHeight = canvas.clientHeight;
+
+        if(clientWidth != c_width || clientHeight != c_height){
+            c_width = clientWidth;
+            c_height = clientHeight;
+            canvas.height = clientHeight;
+            canvas.width = clientWidth;
+
+            gl.viewport(0, 0, c_width, c_height);
         }
     }
 }
