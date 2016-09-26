@@ -75,9 +75,9 @@ class Input{
                 y = c_height - (ev.clientY - top);
 
                 //read one pixel with RGBA
-                var readout = new Uint8Array(brushSize * brushSize * 4);
+                var readout = new Uint8Array(readPixelsSize * readPixelsSize * 4);
                 gl.bindFramebuffer(gl.FRAMEBUFFER, picker.pickerFrameBuffer);
-                gl.readPixels(x - (brushSize/2), y - (brushSize/2), brushSize, brushSize, gl.RGBA, gl.UNSIGNED_BYTE, readout);
+                gl.readPixels(x - (brushSize/2), y - (brushSize/2), readPixelsSize, readPixelsSize, gl.RGBA, gl.UNSIGNED_BYTE, readout);
                 gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
                 readout = utils.filterUnique(readout);

@@ -1,7 +1,9 @@
 //Cube object
 class Cube{
-    constructor(position, id){
+    constructor(position, id, x, y){
         this.id = id;
+        this.x = x;
+        this.y = y;
         this.position = position;
         //this.diffuse = [Math.random(), Math.random(), Math.random()];
         this.diffuse = [0.3, 1.0, 0.3];

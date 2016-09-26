@@ -27,16 +27,21 @@ class Utils{
         let moveY = [0.0, cWidth/2, 0.0];
         let changeC = [0.1, 0.1, 0.1];
 
-        //get cubes with same edges as marked cube
-        objects.push(hit);
-        objects.push(cubes[hit.id+1]);
-        objects.push(cubes[hit.id-1]);
-        objects.push(cubes[hit.id+(gHeight/cWidth)]);
-        objects.push(cubes[hit.id-(gHeight/cWidth)]);
+        //get all cubes in radius
+        for(let x = 0; x < (gWidth/cWidth); x++){
+            for(let y = 0; y < (gHeight/cWidth); y++){
+                let dx = x - hit.x;
+                let dy = y - hit.y;
+                let distanceSquared = dx*dx + dy*dy;
+                //id is x * width + y
+                if(distanceSquared <= brushSize*brushSize && cubes[x * (gWidth/cWidth) + y].position[1] == hit.position[1]){
+                    objects.push(cubes[x * (gWidth/cWidth) + y]);
+                }
+            }
+        }
 
         //apply changes
         for(let i in objects){
-            console.log("IDs " + objects[i].id);
             vec3.add(objects[i].position, objects[i].position, moveY);
             vec3.add(objects[i].diffuse, objects[i].diffuse, changeC);
         }

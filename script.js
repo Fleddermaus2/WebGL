@@ -58,6 +58,7 @@ var program;
 var input;
 
 //brush
+var readPixelsSize = 1;
 var brushSize = 1;
 
 //initialise buffers
@@ -192,7 +193,7 @@ function initWorldObjects(gWidth, gHeight, cWidth) {
             //Half of Grid - loop integer - half cube c_width
             var x = (gWidth/2) - i - (cWidth/2);
             var z = (gHeight/2) - j - (cWidth/2);
-            cubes.push(new Cube([x, 0.0, z], id));
+            cubes.push(new Cube([x, 0.0, z], id, i/cWidth, j/cWidth));
             id++;
         }
     }
