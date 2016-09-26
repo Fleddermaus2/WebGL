@@ -25,17 +25,16 @@ class Utils{
     handlePickedObject(hit) {
         let objects = [];
         let moveY = [0.0, cWidth/2, 0.0];
-        let changeC = [0.1, 0.1, 0.1];
 
         //get all cubes in radius
         for(let x = 0; x < (gWidth/cWidth); x++){
-            for(let y = 0; y < (gHeight/cWidth); y++){
+            for(let z = 0; z < (gHeight/cWidth); z++){
                 let dx = x - hit.x;
-                let dy = y - hit.y;
+                let dy = z - hit.z;
                 let distanceSquared = dx*dx + dy*dy;
                 //id is x * width + y
-                if(distanceSquared <= brushSize*brushSize && cubes[x * (gWidth/cWidth) + y].position[1] == hit.position[1]){
-                    objects.push(cubes[x * (gWidth/cWidth) + y]);
+                if(distanceSquared <= brushSize*brushSize && cubes[x * (gWidth/cWidth) + z].position[1] == hit.position[1]){
+                    objects.push(cubes[x * (gWidth/cWidth) + z]);
                 }
             }
         }
@@ -43,7 +42,11 @@ class Utils{
         //apply changes
         for(let i in objects){
             vec3.add(objects[i].position, objects[i].position, moveY);
-            vec3.add(objects[i].diffuse, objects[i].diffuse, changeC);
+            if(objects[i].position[1] < cColor.length){
+                objects[i].diffuse = cColor[objects[i].position[1]];
+            }else{
+                objects[i].diffuse = cColor[cColor.length - 1];
+            }
         }
 
         picker.render();

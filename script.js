@@ -34,7 +34,7 @@ var zRot = 0;
 var yRot = 0;
 
 //distance to object
-var z = -25.0;
+var z = -50.0;
 
 //objects
 var cubes = [];
@@ -43,11 +43,10 @@ var cScale = 1;
 var cWidth = 2 * cScale;
 
 //grid
-var gWidth = 10 * cWidth;
-var gHeight = 10 * cWidth;
+var gWidth = 20 * cWidth;
+var gHeight = 20 * cWidth;
 
 //input
-//changes context so can't be used with this
 var currentlyPressedKey = {};
 
 //classes
@@ -59,7 +58,17 @@ var input;
 
 //brush
 var readPixelsSize = 1;
-var brushSize = 1;
+var brushSize = 2;
+
+//cube colors
+var cColor = [
+    [0, 0.4, 1], //blue
+    [1, 1, 0], //yellow
+    [0.65, 0.45, 0.2], //brown
+    [0.38, 0.64, 0.2], //green
+    [0.5, 0.5, 0.5], //grey
+    [0.9, 0.9, 0.9] //white-grey
+];
 
 //initialise buffers
 function initBuffers(cScale) {

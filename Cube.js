@@ -1,13 +1,13 @@
 //Cube object
 class Cube{
-    constructor(position, id, x, y){
+    constructor(position, id, x, z){
         this.id = id;
         this.x = x;
-        this.y = y;
+        this.z = z;
         this.position = position;
         //this.diffuse = [Math.random(), Math.random(), Math.random()];
-        this.diffuse = [0.3, 1.0, 0.3];
-        //set colors to a starting value
+        this.diffuse = cColor[0];
+        //set color for picker
         this.randomiseColors();
     }
 
