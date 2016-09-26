@@ -57,6 +57,9 @@ var utils;
 var program;
 var input;
 
+//brush
+var brushSize = 1;
+
 //initialise buffers
 function initBuffers(cScale) {
 
@@ -181,13 +184,16 @@ function initBuffers(cScale) {
 
 function initWorldObjects(gWidth, gHeight, cWidth) {
     $("#count").text(((gWidth/cWidth) * (gHeight/cWidth)).toString());
+    let id = 0;
+
 
     for(var i = 0; i < gWidth; i += cWidth){
         for(var j = 0; j < gHeight; j += cWidth){
             //Half of Grid - loop integer - half cube c_width
             var x = (gWidth/2) - i - (cWidth/2);
             var z = (gHeight/2) - j - (cWidth/2);
-            cubes.push(new Cube([x, 0.0, z]));
+            cubes.push(new Cube([x, 0.0, z], id));
+            id++;
         }
     }
 }

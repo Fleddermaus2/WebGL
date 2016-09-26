@@ -21,15 +21,31 @@ class Utils{
         return degrees * Math.PI / 180;
     }
 
+    //do things with selected objects
     handlePickedObject(hit) {
-        var moveY = [0.0, cWidth/2, 0.0];
-        var changeC = [0.1, 0.1, 0.1];
-        vec3.add(hit.position, hit.position, moveY);
-        vec3.add(hit.diffuse, hit.diffuse, changeC);
+        let objects = [];
+        let moveY = [0.0, cWidth/2, 0.0];
+        let changeC = [0.1, 0.1, 0.1];
+
+        //get cubes with same edges as marked cube
+        objects.push(hit);
+        objects.push(cubes[hit.id+1]);
+        objects.push(cubes[hit.id-1]);
+        objects.push(cubes[hit.id+(gHeight/cWidth)]);
+        objects.push(cubes[hit.id-(gHeight/cWidth)]);
+
+        //apply changes
+        for(let i in objects){
+            console.log("IDs " + objects[i].id);
+            vec3.add(objects[i].position, objects[i].position, moveY);
+            vec3.add(objects[i].diffuse, objects[i].diffuse, changeC);
+        }
 
         picker.render();
     }
 
+    //convert array [1, 2, 3, 4, 5, ...] to array[[1, 2, 3, 4], []]
+    //easier for handling colors
     cleanArray(readout){
         let result = [];
         let temp;
@@ -44,8 +60,11 @@ class Utils{
         return result;
     }
 
+    //filter unique values from array with colors
     filterUnique(readout){
         let result = [];
+        readout = this.cleanArray(readout);
+
 
         function findColor(i) {
             let color;

@@ -58,7 +58,6 @@ class Input{
         canvas.onmouseup = function (ev) {
             //left mouse button
             if(ev.which == 1){
-                console.log("Mouse Event");
                 //clientX and clientY calculate from top left of browser
                 var x, y, top = 0, left = 0, obj = canvas;
                 while(obj && obj.tagName !== 'Body'){
@@ -76,14 +75,12 @@ class Input{
                 y = c_height - (ev.clientY - top);
 
                 //read one pixel with RGBA
-                var readout = new Uint8Array(50 * 50 * 4);
+                var readout = new Uint8Array(brushSize * brushSize * 4);
                 gl.bindFramebuffer(gl.FRAMEBUFFER, picker.pickerFrameBuffer);
-                gl.readPixels(x, y, 50, 50, gl.RGBA, gl.UNSIGNED_BYTE, readout);
+                gl.readPixels(x - (brushSize/2), y - (brushSize/2), brushSize, brushSize, gl.RGBA, gl.UNSIGNED_BYTE, readout);
                 gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-                readout = utils.cleanArray(readout);
                 readout = utils.filterUnique(readout);
-                console.log(readout.length);
 
                 var ob = null;
                 for(var i = 0; i < cubes.length; i++){
