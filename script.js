@@ -64,8 +64,14 @@ var brushSize = 2;
 var cColor = [
     [0, 0.4, 1], //blue
     [1, 1, 0], //yellow
+    [1, 1, 0], //yellow
     [0.65, 0.45, 0.2], //brown
     [0.38, 0.64, 0.2], //green
+    [0.38, 0.64, 0.2], //green
+    [0.38, 0.64, 0.2], //green
+    [0.5, 0.5, 0.5], //grey
+    [0.5, 0.5, 0.5], //grey
+    [0.5, 0.5, 0.5], //grey
     [0.5, 0.5, 0.5], //grey
     [0.9, 0.9, 0.9] //white-grey
 ];
@@ -225,6 +231,9 @@ function webGL() {
 
     //remove context menu on canvas
     $('body').on('contextmenu', '#canvas', function(e){ return false; });
+    $('#brushSize').on("change paste keyup", function () {
+        brushSize = $('#brushSize').val();
+    });
 
     //draw regularly
     tick();
