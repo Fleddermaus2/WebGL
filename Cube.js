@@ -5,7 +5,6 @@ class Cube{
         this.x = x;
         this.z = z;
         this.position = position;
-        //this.diffuse = [Math.random(), Math.random(), Math.random()];
         this.diffuse = cColor[0];
         //set color for picker
         this.randomiseColors();

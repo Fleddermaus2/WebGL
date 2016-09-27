@@ -22,9 +22,14 @@ class Utils{
     }
 
     //do things with selected objects
-    handlePickedObject(hit) {
+    handlePickedObject(hit, mouseButton) {
         let objects = [];
-        let moveY = [0.0, cWidth/2, 0.0];
+
+        if(mouseButton == 1){
+            var moveY = [0.0, cWidth/2, 0.0];
+        }else if(mouseButton == 3){
+            var moveY = [0.0, -1 * (cWidth/2), 0.0];
+        }
 
         //get all cubes in radius
         for(let x = 0; x < (gWidth/cWidth); x++){
@@ -42,7 +47,9 @@ class Utils{
         //apply changes
         for(let i in objects){
             vec3.add(objects[i].position, objects[i].position, moveY);
-            if(objects[i].position[1] < cColor.length){
+            if(objects[i].position[1] < 0){
+                objects[i].diffuse = cColor[0];
+            }else if(objects[i].position[1] < cColor.length){
                 objects[i].diffuse = cColor[objects[i].position[1]];
             }else{
                 objects[i].diffuse = cColor[cColor.length - 1];
