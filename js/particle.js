@@ -1,8 +1,9 @@
 class Particle{
-    constructor(startingDistance, rotationSpeed){
+    constructor(){
         this.angle = 0;
-        this.dist = startingDistance;
-        this.rotationSpeed = rotationSpeed;
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
         //set colors to a starting value
         this.randomiseColors();
     }
@@ -12,7 +13,7 @@ class Particle{
 
         //move to particles position
         mat4.rotate(mvMatrix, mvMatrix, degToRad(this.angle), [0.0, 1.0, 0.0]);
-        mat4.translate(mvMatrix, mvMatrix, [this.dist, 0.0, 0.0]);
+        mat4.translate(mvMatrix, mvMatrix, [this.x, this.y, this.z]);
 
         //rotate back so that the particle is facing the viewer
         mat4.rotate(mvMatrix, mvMatrix, degToRad(-this.angle), [0.0, 1.0, 0.0]);
@@ -34,11 +35,16 @@ class Particle{
     }
 
     animate(elapsedTime) {
-        this.angle += this.rotationSpeed * effectiveFPMS * elapsedTime;
+        //this.angle += this.rotationSpeed * effectiveFPMS * elapsedTime;
         //decrease the distance, resetting the particle to the outside of the spiral if it is at the center
-        this.dist -= 0.01 * effectiveFPMS * elapsedTime;
-        if(this.dist < 0.0){
-            this.dist += 5.0;
+        this.x -= 0.01 * getRandomInt(-10, 10);
+        this.z -= 0.01 * getRandomInt(-10, 10);
+        if(this.x < -10.0){
+            this.x = 0.0;
+            this.randomiseColors();
+        }
+        if(this.z < -5.0){
+            this.z = 0.0;
             this.randomiseColors();
         }
     }

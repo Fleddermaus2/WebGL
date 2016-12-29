@@ -21,7 +21,7 @@ var tilt = 90;
 var spin = 0;
 
 //distance to object
-var z = -10.0;
+var z = -20.0;
 
 //animation
 var lastTime = 0;
@@ -179,7 +179,7 @@ function initWorldObjects() {
     var numStars = 50;
 
     for(var i = 0; i < numStars; i++){
-        particles.push(new Particle((i/numStars) * 5.0, i/numStars));
+        particles.push(new Particle());
     }
 }
 
