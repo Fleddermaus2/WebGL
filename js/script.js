@@ -2,11 +2,9 @@
 var gl;
 
 //buffer for positions
-var cubeVertexPositionBuffer;
-//buffer for objectTexture coordinates
-var cubeVertexTextureCoordBuffer;
-//buffer for normals
-var cubeVertexNormalBuffer;
+var particleVertexPositionBuffer;
+//buffer for particleTexture coordinates
+var particleVertexTextureCoordBuffer;
 
 //model-view-matrix
 var mvMatrix = mat4.identity(mat4.create());
@@ -29,14 +27,14 @@ var z = -10.0;
 var lastTime = 0;
 var effectiveFPMS = 60 / 1000;
 
-//objectTexture
-var objectTexture;
+//particle Texture
+var particleTexture;
 
 //keys
 var currentlyPressedKey = {};
 
 //objects
-var stars = [];
+var particles = [];
 var mvMatrixStack = [];
 
 //initialise gl
@@ -133,71 +131,21 @@ function handleLoadedTexture(texture) {
 }
 
 function initTexture() {
-    objectTexture = gl.createTexture();
-    objectTexture.image = new Image();
-    objectTexture.image.onload = function () {
-        handleLoadedTexture(objectTexture);
+    particleTexture = gl.createTexture();
+    particleTexture.image = new Image();
+    particleTexture.image.onload = function () {
+        handleLoadedTexture(particleTexture);
     };
 
-    objectTexture.image.src = "star.gif";
-}
-
-function mvPushMatrix() {
-    var copy = mat4.create();
-    mat4.copy(copy, mvMatrix);
-    mvMatrixStack.push(copy);
-}
-
-function mvPopMatrix() {
-    if (mvMatrixStack.length == 0) {
-        throw "Invalid popMatrix!";
-    }
-    mvMatrix = mvMatrixStack.pop();
-}
-
-function setMatrixUniforms() {
-    gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
-}
-
-function degToRad(degrees) {
-    return degrees * Math.PI / 180;
-}
-
-//dictionary for pressed keys
-function handleKeyDown(event) {
-    currentlyPressedKey[event.keyCode] = true;
-}
-
-function handleKeyUp(event) {
-    currentlyPressedKey[event.keyCode] = false;
-}
-
-function handleKeys() {
-    if(currentlyPressedKey[81]){
-        //Page Up
-        z -= 0.05;
-    }
-    if(currentlyPressedKey[69]){
-        //Page Down
-        z += 0.05;
-    }
-    if(currentlyPressedKey[87]){
-        //Up cursor speed
-        tilt -= 1;
-    }
-    if(currentlyPressedKey[83]){
-        //Down cursor speed
-        tilt += 1;
-    }
+    particleTexture.image.src = "../img/star.gif";
 }
 
 //initialise buffers for position
 function initBuffers() {
 
     //create cube position buffer
-    cubeVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
+    particleVertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
 
     var vertices = [
         -1.0, -1.0,  0.0,
@@ -208,12 +156,12 @@ function initBuffers() {
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
-    cubeVertexPositionBuffer.itemSize = 3;
-    cubeVertexPositionBuffer.numItems = 4;
+    particleVertexPositionBuffer.itemSize = 3;
+    particleVertexPositionBuffer.numItems = 4;
 
     //create cube texturecoord buffer
-    cubeVertexTextureCoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexTextureCoordBuffer);
+    particleVertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
 
     var textureCoords = [
         0.0, 0.0,
@@ -223,15 +171,15 @@ function initBuffers() {
     ];
 
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
-    cubeVertexTextureCoordBuffer.itemSize = 2;
-    cubeVertexTextureCoordBuffer.numItems = 4;
+    particleVertexTextureCoordBuffer.itemSize = 2;
+    particleVertexTextureCoordBuffer.numItems = 4;
 }
 
 function initWorldObjects() {
     var numStars = 50;
 
     for(var i = 0; i < numStars; i++){
-        stars.push(new Particle((i/numStars) * 5.0, i/numStars));
+        particles.push(new Particle((i/numStars) * 5.0, i/numStars));
     }
 }
 
@@ -251,8 +199,8 @@ function drawScene() {
     mat4.rotate(mvMatrix, mvMatrix, degToRad(tilt), [1, 0, 0]);
 
     var twinkle = document.getElementById("twinkle").checked;
-    for(var i in stars){
-        stars[i].draw(tilt, spin, twinkle);
+    for(var i in particles){
+        particles[i].draw(tilt, spin, twinkle);
         spin += 0.1;
     }
 }
@@ -264,8 +212,8 @@ function animate() {
     if(lastTime != 0){
         var elapsed = timeNow - lastTime;
 
-        for(var i in stars){
-            stars[i].animate(elapsed);
+        for(var i in particles){
+            particles[i].animate(elapsed);
         }
     }
 
@@ -289,9 +237,6 @@ function webGL() {
     initWorldObjects();
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    //depth testing and blending don't work well together
-    //gl.enable(gl.DEPTH_TEST);
-    //gl.depthFunc(gl.LEQUAL);
 
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;

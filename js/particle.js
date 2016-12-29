@@ -10,17 +10,17 @@ class Particle{
     draw(tilt, spin, twinkle) {
         mvPushMatrix();
 
-        //move to stars position
+        //move to particles position
         mat4.rotate(mvMatrix, mvMatrix, degToRad(this.angle), [0.0, 1.0, 0.0]);
         mat4.translate(mvMatrix, mvMatrix, [this.dist, 0.0, 0.0]);
 
-        //rotate back so that the star is facing the viewer
+        //rotate back so that the particle is facing the viewer
         mat4.rotate(mvMatrix, mvMatrix, degToRad(-this.angle), [0.0, 1.0, 0.0]);
         mat4.rotate(mvMatrix, mvMatrix, degToRad(-tilt), [1.0, 0.0, 0.0]);
 
         if(twinkle){
             gl.uniform3f(shaderProgram.colorUniform, this.twinkleR, this.twinkleG, this.twinkleB);
-            this.drawStar();
+            this.drawParticle();
         }
 
         //particle spin around z at the same rate
@@ -28,14 +28,14 @@ class Particle{
 
         //draw star in main color
         gl.uniform3f(shaderProgram.colorUniform, this.r, this.g, this.b);
-        this.drawStar();
+        this.drawParticle();
 
         mvPopMatrix();
     }
 
     animate(elapsedTime) {
         this.angle += this.rotationSpeed * effectiveFPMS * elapsedTime;
-        //decrease the distance, resetting the star to the outside of the spiral if it is at the center
+        //decrease the distance, resetting the particle to the outside of the spiral if it is at the center
         this.dist -= 0.01 * effectiveFPMS * elapsedTime;
         if(this.dist < 0.0){
             this.dist += 5.0;
@@ -43,7 +43,7 @@ class Particle{
         }
     }
 
-    randomiseColors = function () {
+    randomiseColors() {
         //give star color
         this.r = Math.random();
         this.g = Math.random();
@@ -55,18 +55,18 @@ class Particle{
         this.twinkleB = Math.random();
     }
 
-    drawStar() {
+    drawParticle() {
         gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, objectTexture);
+        gl.bindTexture(gl.TEXTURE_2D, particleTexture);
         gl.uniform1i(shaderProgram.samplerUniform, 0);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexTextureCoordBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexTextureCoordAttribute, cubeVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexTextureCoordAttribute, particleVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexPositionBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, cubeVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, particleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         setMatrixUniforms();
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, cubeVertexPositionBuffer.numItems);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, particleVertexPositionBuffer.numItems);
     }
 }
