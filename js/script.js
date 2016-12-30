@@ -2,40 +2,27 @@
 var gl;
 
 //buffer for positions
-var particleVertexPositionBuffer;
-//buffer for particleTexture coordinates
-var particleVertexTextureCoordBuffer;
+var pointStartPositionsBuffer;
+//buffer for texture coordinates
+var pointEndPositionsBuffer;
 
-//model-view-matrix
-var mvMatrix = mat4.identity(mat4.create());
-//projection matrix
-var pMatrix = mat4.identity(mat4.create());
+var pointLifetimesBuffer;
 
 //program
 var shaderProgram;
 
-//rotation
-var tilt = 90;
-
-//speed
-var spin = 0;
-
-//distance to object
-var z = -20.0;
-
 //animation
 var lastTime = 0;
-var effectiveFPMS = 60 / 1000;
 
 //particle Texture
-var particleTexture;
+var texture;
 
-//keys
-var currentlyPressedKey = {};
+//particles
+var numParticles = 50;
 
-//objects
-var particles = [];
-var mvMatrixStack = [];
+var time = 1.0;
+var centerPos;
+var color;
 
 //initialise gl
 function initGL(canvas) {
@@ -52,43 +39,37 @@ function initGL(canvas) {
 }
 
 function getShader(gl, id) {
-    //extracting shader from html because easier to read
-    //not in future
     var shaderScript = document.getElementById(id);
-
-    if(!shaderScript){
+    if (!shaderScript) {
         return null;
     }
 
     var str = "";
     var k = shaderScript.firstChild;
-
-    while(k){
-        if(k.nodeType == 3){
+    while (k) {
+        if (k.nodeType == 3) {
             str += k.textContent;
         }
-
         k = k.nextSibling;
     }
 
     var shader;
-
-    if(shaderScript.type == "x-shader/x-fragment"){
+    if (shaderScript.type == "x-shader/x-fragment") {
         shader = gl.createShader(gl.FRAGMENT_SHADER);
-    }else if(shaderScript.type == "x-shader/x-vertex"){
+    } else if (shaderScript.type == "x-shader/x-vertex") {
         shader = gl.createShader(gl.VERTEX_SHADER);
-    }else{
+    } else {
         return null;
     }
 
     gl.shaderSource(shader, str);
     gl.compileShader(shader);
 
-    if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)){
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
         alert(gl.getShaderInfoLog(shader));
-        console.log("no shader");
         return null;
     }
+
     return shader;
 }
 
@@ -107,17 +88,19 @@ function initShaders() {
 
     gl.useProgram(shaderProgram);
 
-    //vertexPositionAttribute custom attribute for easier use
-    shaderProgram.vertexPositionAttribute  = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    shaderProgram.pointLifetimeAttribute = gl.getAttribLocation(shaderProgram, "aLifetime");
+    gl.enableVertexAttribArray(shaderProgram.pointLifetimeAttribute);
 
-    shaderProgram.vertexTextureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
-    gl.enableVertexAttribArray(shaderProgram.vertexTextureCoordAttribute);
+    shaderProgram.pointStartPositionAttribute = gl.getAttribLocation(shaderProgram, "aStartPosition");
+    gl.enableVertexAttribArray(shaderProgram.pointStartPositionAttribute);
 
-    shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+    shaderProgram.pointEndPositionAttribute = gl.getAttribLocation(shaderProgram, "aEndPosition");
+    gl.enableVertexAttribArray(shaderProgram.pointEndPositionAttribute);
+
+    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "sTexture");
+    shaderProgram.centerPositionUniform = gl.getUniformLocation(shaderProgram, "uCenterPosition");
     shaderProgram.colorUniform = gl.getUniformLocation(shaderProgram, "uColor");
+    shaderProgram.timeUniform = gl.getUniformLocation(shaderProgram, "uTime");
 }
 
 function handleLoadedTexture(texture) {
@@ -127,82 +110,85 @@ function handleLoadedTexture(texture) {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
 function initTexture() {
-    particleTexture = gl.createTexture();
-    particleTexture.image = new Image();
-    particleTexture.image.onload = function () {
-        handleLoadedTexture(particleTexture);
+    texture = gl.createTexture();
+    texture.image = new Image();
+    texture.image.onload = function () {
+        handleLoadedTexture(texture);
     };
 
-    particleTexture.image.src = "../img/star.gif";
+    texture.image.src = "../img/star.gif";
 }
 
 //initialise buffers for position
 function initBuffers() {
 
-    //create cube position buffer
-    particleVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexPositionBuffer);
+    lifetimes = [];
+    startPositions = [];
+    endPositions = [];
+    for (var i=0; i < numParticles; i++)  {
+        lifetimes.push(Math.random());
 
-    var vertices = [
-        -1.0, -1.0,  0.0,
-        1.0, -1.0,  0.0,
-        -1.0,  1.0,  0.0,
-        1.0,  1.0,  0.0
-    ];
+        startPositions.push((Math.random() * 0.25) - 0.125);
+        startPositions.push((Math.random() * 0.25) - 0.125);
+        startPositions.push((Math.random() * 0.25) - 0.125);
 
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-    particleVertexPositionBuffer.itemSize = 3;
-    particleVertexPositionBuffer.numItems = 4;
-
-    //create cube texturecoord buffer
-    particleVertexTextureCoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, particleVertexTextureCoordBuffer);
-
-    var textureCoords = [
-        0.0, 0.0,
-        1.0, 0.0,
-        0.0, 1.0,
-        1.0, 1.0
-    ];
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
-    particleVertexTextureCoordBuffer.itemSize = 2;
-    particleVertexTextureCoordBuffer.numItems = 4;
-}
-
-function initWorldObjects() {
-    var numStars = 50;
-
-    for(var i = 0; i < numStars; i++){
-        particles.push(new Particle());
+        endPositions.push((Math.random() * 2) - 1);
+        endPositions.push((Math.random() * 2) - 1);
+        endPositions.push((Math.random() * 2) - 1);
     }
+
+    pointLifetimesBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointLifetimesBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(lifetimes), gl.STATIC_DRAW);
+    pointLifetimesBuffer.itemSize = 1;
+    pointLifetimesBuffer.numItems = numParticles;
+
+    pointStartPositionsBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointStartPositionsBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(startPositions), gl.STATIC_DRAW);
+    pointStartPositionsBuffer.itemSize = 3;
+    pointStartPositionsBuffer.numItems = numParticles;
+
+    pointEndPositionsBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointEndPositionsBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(endPositions), gl.STATIC_DRAW);
+    pointEndPositionsBuffer.itemSize = 3;
+    pointEndPositionsBuffer.numItems = numParticles;
 }
 
 //draw all elements to canvas
 function drawScene() {
-    //camera
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    mat4.perspective(pMatrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
-    //switch to blending
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointLifetimesBuffer);
+    gl.vertexAttribPointer(shaderProgram.pointLifetimeAttribute, pointLifetimesBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointStartPositionsBuffer);
+    gl.vertexAttribPointer(shaderProgram.pointStartPositionAttribute, pointStartPositionsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, pointEndPositionsBuffer);
+    gl.vertexAttribPointer(shaderProgram.pointEndPositionAttribute, pointEndPositionsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
     gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 
-    mat4.identity(mvMatrix);
-    mat4.translate(mvMatrix, mvMatrix, [0.0, 0, z]);
-    //rotate
-    mat4.rotate(mvMatrix, mvMatrix, degToRad(tilt), [1, 0, 0]);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.uniform1i(shaderProgram.samplerUniform, 0);
 
-    var twinkle = document.getElementById("twinkle").checked;
-    for(var i in particles){
-        particles[i].draw(tilt, spin, twinkle);
-        spin += 0.1;
-    }
+    gl.uniform3f(shaderProgram.centerPositionUniform, centerPos[0], centerPos[1], centerPos[2]);
+    gl.uniform4f(shaderProgram.colorUniform, color[0], color[1], color[2], color[3]);
+    gl.uniform1f(shaderProgram.timeUniform, time);
+
+    gl.drawArrays(gl.POINTS, 0, pointLifetimesBuffer.numItems);
 }
 
 //rotate objects based on passed time since last call
@@ -212,35 +198,34 @@ function animate() {
     if(lastTime != 0){
         var elapsed = timeNow - lastTime;
 
-        for(var i in particles){
-            particles[i].animate(elapsed);
-        }
+        time += elapsed / 3000;
+    }
+    if(time >= 1.0){
+        time = 0;
+        centerPos = [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5];
+        color = [Math.random() / 2 + 0.5, Math.random() / 2 + 0.5, Math.random() / 2 + 0.5, 0.5];
+        initBuffers();
     }
 
     lastTime = timeNow;
 }
 
 function tick() {
-    requestAnimationFrame(tick);
-    handleKeys();
-    drawScene();
     animate();
+    drawScene();
 }
 
 //main function
 function webGL() {
     var canvas = document.getElementById("canvas");
     initGL(canvas);
-    initShaders();
-    initBuffers();
     initTexture();
-    initWorldObjects();
+    initShaders();
+
+    // Hack!
+    gl.enable(0x8642);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
-    document.onkeydown = handleKeyDown;
-    document.onkeyup = handleKeyUp;
-
-    //draw regularly
-    tick();
+    setInterval(tick, 15);
 }

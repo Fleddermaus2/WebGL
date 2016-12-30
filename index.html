@@ -4,36 +4,52 @@
     <meta charset="UTF-8">
     <script type="text/javascript" src="js/gl-matrix.js"></script>
     <script type="text/javascript" src="js/script.js"></script>
-    <script type="text/javascript" src="js/particle.js"></script>
     <script type="text/javascript" src="js/utils.js"></script>
 
     <script id="shader-fs" type="x-shader/x-fragment">
-    precision mediump float;
 
-    varying vec2 vTextureCoord;
+      precision mediump float;
 
-    uniform sampler2D uSampler;
-    uniform vec3 uColor;
+      uniform vec4 uColor;
 
-    void main(void) {
-        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-        gl_FragColor = textureColor * vec4(uColor, 1.0);
-    }
+      varying float vLifetime;
+
+      uniform sampler2D sTexture;
+
+
+      void main(void) {
+        vec4 texColor;
+        texColor = texture2D(sTexture, gl_PointCoord);
+        gl_FragColor = vec4(uColor) * texColor;
+        gl_FragColor.a *= vLifetime;
+      }
     </script>
 
     <script id="shader-vs" type="x-shader/x-vertex">
-    attribute vec3 aVertexPosition;
-    attribute vec2 aTextureCoord;
 
-    uniform mat4 uMVMatrix;
-    uniform mat4 uPMatrix;
+      uniform float uTime;
+      uniform vec3 uCenterPosition;
 
-    varying vec2 vTextureCoord;
+      attribute float aLifetime;
+      attribute vec3 aStartPosition;
+      attribute vec3 aEndPosition;
 
-    void main(void) {
-        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-        vTextureCoord = aTextureCoord;
-    }
+      varying float vLifetime;
+
+
+      void main(void) {
+        if (uTime <= aLifetime) {
+          gl_Position.xyz = aStartPosition + (uTime * aEndPosition);
+          gl_Position.xyz += uCenterPosition;
+          gl_Position.w = 1.0;
+        } else {
+          gl_Position = vec4(-1000, -1000, 0, 0);
+        }
+
+        vLifetime = 1.0 - (uTime / aLifetime);
+        vLifetime = clamp(vLifetime, 0.0, 1.0);
+        gl_PointSize = (vLifetime * vLifetime) * 40.0;
+      }
     </script>
 
 </head>
