@@ -18,11 +18,14 @@ var lastTime = 0;
 var texture;
 
 //particles
-var numParticles = 50;
+var numParticles = 500;
 
-var time = 1.0;
+var time = 1.5;
 var centerPos;
 var color;
+
+var maxLifetime = 10;
+var size = 40;
 
 //initialise gl
 function initGL(canvas) {
@@ -97,6 +100,7 @@ function initShaders() {
     shaderProgram.pointEndPositionAttribute = gl.getAttribLocation(shaderProgram, "aEndPosition");
     gl.enableVertexAttribArray(shaderProgram.pointEndPositionAttribute);
 
+    shaderProgram.pointSizeUniform = gl.getUniformLocation(shaderProgram, "uSize");
     shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "sTexture");
     shaderProgram.centerPositionUniform = gl.getUniformLocation(shaderProgram, "uCenterPosition");
     shaderProgram.colorUniform = gl.getUniformLocation(shaderProgram, "uColor");
@@ -105,7 +109,7 @@ function initShaders() {
 
 function handleLoadedTexture(texture) {
     //flip because of different coordinates
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -118,11 +122,12 @@ function handleLoadedTexture(texture) {
 function initTexture() {
     texture = gl.createTexture();
     texture.image = new Image();
+    texture.image.width = 1000;
     texture.image.onload = function () {
         handleLoadedTexture(texture);
     };
 
-    texture.image.src = "../img/star.gif";
+    texture.image.src = "../img/grumpycat.png";
 }
 
 //initialise buffers for position
@@ -132,7 +137,7 @@ function initBuffers() {
     startPositions = [];
     endPositions = [];
     for (var i=0; i < numParticles; i++)  {
-        lifetimes.push(Math.random());
+        lifetimes.push(getRandomInt(1, maxLifetime));
 
         startPositions.push((Math.random() * 0.25) - 0.125);
         startPositions.push((Math.random() * 0.25) - 0.125);
@@ -187,6 +192,7 @@ function drawScene() {
     gl.uniform3f(shaderProgram.centerPositionUniform, centerPos[0], centerPos[1], centerPos[2]);
     gl.uniform4f(shaderProgram.colorUniform, color[0], color[1], color[2], color[3]);
     gl.uniform1f(shaderProgram.timeUniform, time);
+    gl.uniform1f(shaderProgram.pointSizeUniform, size);
 
     gl.drawArrays(gl.POINTS, 0, pointLifetimesBuffer.numItems);
 }
@@ -221,9 +227,6 @@ function webGL() {
     initGL(canvas);
     initTexture();
     initShaders();
-
-    // Hack!
-    gl.enable(0x8642);
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 

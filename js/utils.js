@@ -7,3 +7,15 @@ function getRandomInt(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min);
 }
+
+function setTime(){
+    maxLifetime = document.getElementById("time").value;
+}
+
+function setNumberOfParticles() {
+    numParticles = document.getElementById("numParticles").value;
+}
+
+function setSize() {
+    size = document.getElementById("size").value;
+}

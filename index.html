@@ -29,6 +29,7 @@
 
       uniform float uTime;
       uniform vec3 uCenterPosition;
+      uniform float uSize;
 
       attribute float aLifetime;
       attribute vec3 aStartPosition;
@@ -48,17 +49,15 @@
 
         vLifetime = 1.0 - (uTime / aLifetime);
         vLifetime = clamp(vLifetime, 0.0, 1.0);
-        gl_PointSize = (vLifetime * vLifetime) * 40.0;
+        gl_PointSize = (vLifetime * vLifetime) * uSize;
       }
     </script>
 
 </head>
 <body onload="webGL();">
-<canvas id="canvas" style="border: none;" width="1024" height="720"></canvas>
-
-<br />
-(Use wasd keys to spin the box and <code>e</code>/<code>q</code> to zoom out/in)
-<br>
-<input type="checkbox" id="twinkle" /> Twinkle<br/>
+<canvas id="canvas" style="border: none;" width="2000" height="1000"></canvas>
+<input type="text" id="time" onchange="setTime()">
+<input type="text" id="numParticles" onchange="setNumberOfParticles()">
+<input type="text" id="size" onchange="setSize()">
 </body>
 </html>
