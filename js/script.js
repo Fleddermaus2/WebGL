@@ -127,7 +127,7 @@ function initTexture() {
         handleLoadedTexture(texture);
     };
 
-    texture.image.src = "../img/grumpycat.png";
+    texture.image.src = "../img/star.gif";
 }
 
 //initialise buffers for position
