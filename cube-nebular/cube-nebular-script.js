@@ -139,7 +139,7 @@ function initTexture() {
         handleLoadedTexture(objectTexture);
     };
 
-    objectTexture.image.src = "crate.gif";
+    objectTexture.image.src = "../img/crate.gif";
 }
 
 function mvPushMatrix() {

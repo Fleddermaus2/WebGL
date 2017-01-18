@@ -139,7 +139,7 @@ function initTexture() {
         handleLoadedTexture(objectTexture);
     };
 
-    objectTexture.image.src = "star.gif";
+    objectTexture.image.src = "../img/star.gif";
 }
 
 function mvPushMatrix() {

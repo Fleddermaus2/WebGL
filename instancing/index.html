@@ -28,23 +28,23 @@ freely, subject to the following restrictions:
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
         <title>Instancing with ANGLE_instanced_arrays</title>
-        <link href="css/common.css" rel="stylesheet" type="text/css" />
+        <link href="../instancing/css/common.css" rel="stylesheet" type="text/css" />
 
-        <script src="js/util/require.js"></script>
+        <script src="../instancing/js/util/require.js"></script>
         <script>
             require.config({
                 baseUrl: "js"
             });
 
             require([
-                "util/gl-context-helper",
-                "util/camera",
-                "light",
-                "util/mesh-utils",
-                "util/gl-util",
-                "util/gl-matrix-min",
-                "js/util/game-shim.js",
-                "js/util/Stats.js"
+                "../instancing/js/util/gl-context-helper",
+                "../instancing/js/util/camera",
+                "../instancing/js/light",
+                "../instancing/js/util/mesh-utils",
+                "../instancing/js/util/gl-util",
+                "../instancing/js/util/gl-matrix-min",
+                "../instancing/js/util/game-shim.js",
+                "../instancing/js/util/Stats.js"
             ], function(GLContextHelper, Camera, Light, MeshUtils, GLUtil) {
                 "use strict";
 
@@ -243,7 +243,7 @@ freely, subject to the following restrictions:
 
                     var self = this;
                     var jsonXhr = new XMLHttpRequest();
-                    jsonXhr.open('GET', "suzanne.json", true);
+                    jsonXhr.open('GET', "../instancing/suzanne.json", true);
                     jsonXhr.onload = function() {
                         var data = JSON.parse(this.responseText);
 
