@@ -67,9 +67,12 @@
 <body onload="webGL();">
 <canvas id="canvas"></canvas>
 <div id="controls">
-    <input type="text" id="time" onchange="setTime()">
-    <input type="text" id="numParticles" onchange="setNumberOfParticles()">
-    <input type="text" id="size" onchange="setSize()">
+    <label for="time">Lifetime</label>
+    <input type="text" id="time" onchange="setTime()" placeholder="10">
+    <label for="numParticles">Number of Particles</label>
+    <input type="text" id="numParticles" onchange="setNumberOfParticles()" placeholder="500">
+    <label for="size">Size of Particle</label>
+    <input type="text" id="size" onchange="setSize()" placeholder="40">
 </div>
 </body>
 </html>

@@ -43,6 +43,8 @@ var canvas;
 var c_height;
 var c_width;
 
+var numParticles = 100;
+
 //initialise gl
 function initGL(canvas) {
     try{
@@ -301,10 +303,10 @@ Star.prototype.randomiseColors = function () {
 };
 
 function initWorldObjects() {
-    var numStars = 50;
+    stars = [];
 
-    for(var i = 0; i < numStars; i++){
-        stars.push(new Star((i/numStars) * 5.0, i/numStars));
+    for(var i = 0; i < numParticles; i++){
+        stars.push(new Star((i/numParticles) * 5.0, i/numParticles));
     }
 }
 
@@ -395,4 +397,9 @@ function resize(canvas){
 
         gl.viewport(0, 0, c_width, c_height);
     }
+}
+
+function setNumberOfParticles() {
+    numParticles = document.getElementById("numParticles").value;
+    initWorldObjects();
 }

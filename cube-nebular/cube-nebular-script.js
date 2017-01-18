@@ -23,7 +23,7 @@ var tilt = 90;
 var spin = 0;
 
 //distance to object
-var z = -10.0;
+var z = -25.0;
 
 //animation
 var lastTime = 0;
@@ -42,6 +42,8 @@ var mvMatrixStack = [];
 var canvas;
 var c_height;
 var c_width;
+
+var numParticles = 100;
 
 //initialise gl
 function initGL(canvas) {
@@ -365,10 +367,10 @@ Cube.prototype.randomiseColors = function () {
 };
 
 function initWorldObjects() {
-    var numStars = 100;
+    cubes = [];
 
-    for(var i = 0; i < numStars; i++){
-        cubes.push(new Cube((i/numStars) * 5.0 + 10.0, i/numStars));
+    for(var i = 0; i < numParticles; i++){
+        cubes.push(new Cube((i/numParticles) * 5.0 + 15.0, i/numParticles));
     }
 }
 
@@ -454,4 +456,9 @@ function resize(canvas){
 
         gl.viewport(0, 0, c_width, c_height);
     }
+}
+
+function setNumberOfParticles() {
+    numParticles = document.getElementById("numParticles").value;
+    initWorldObjects();
 }
