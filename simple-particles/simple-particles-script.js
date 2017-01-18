@@ -39,12 +39,15 @@ var currentlyPressedKey = {};
 var stars = [];
 var mvMatrixStack = [];
 
+var canvas;
+var c_height;
+var c_width;
+
 //initialise gl
 function initGL(canvas) {
     try{
         gl = canvas.getContext("webgl");
-        gl.viewportWidth = canvas.width;
-        gl.viewportHeight = canvas.height;
+        resize(canvas);
     }catch(e){
     }
 
@@ -308,9 +311,11 @@ function initWorldObjects() {
 //draw all elements to canvas
 function drawScene() {
     //camera
-    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    resize(canvas);
+
+    gl.viewport(0, 0, c_width, c_height);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    mat4.perspective(pMatrix, 45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
+    mat4.perspective(pMatrix, 45, c_width / c_height, 0.1, 100.0);
     //switch to blending
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
     gl.enable(gl.BLEND);
@@ -358,7 +363,7 @@ function tick() {
 
 //main function
 function webGL() {
-    var canvas = document.getElementById("canvas");
+    canvas = document.getElementById("canvas");
     initGL(canvas);
     initShaders();
     initBuffers();
@@ -375,4 +380,19 @@ function webGL() {
 
     //draw regularly
     tick();
+}
+
+//check if size changed and apply new sizes
+function resize(canvas){
+    let clientWidth = canvas.clientWidth;
+    let clientHeight = canvas.clientHeight;
+
+    if(clientWidth != c_width || clientHeight != c_height){
+        c_width = clientWidth;
+        c_height = clientHeight;
+        canvas.height = clientHeight;
+        canvas.width = clientWidth;
+
+        gl.viewport(0, 0, c_width, c_height);
+    }
 }

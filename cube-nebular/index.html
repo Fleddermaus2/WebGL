@@ -2,6 +2,15 @@
 <html>
 <head>
     <meta charset="UTF-8">
+
+    <style>
+        #canvas{
+            height: 100%;
+            width: 100%;
+            border: none;
+        }
+    </style>
+
     <script type="text/javascript" src="../js/gl-matrix.js"></script>
     <script type="text/javascript" src="../js/util/Stats.js"></script>
     <script type="text/javascript" src="../cube-nebular/cube-nebular-script.js"></script>
@@ -37,7 +46,7 @@
 
 </head>
 <body onload="webGL();">
-<canvas id="canvas" style="border: none;" width="1600" height="800"></canvas>
+<canvas id="canvas"></canvas>
 <div id="controls">
     <br />
     (Use wasd keys to spin the box and <code>e</code>/<code>q</code> to zoom out/in)

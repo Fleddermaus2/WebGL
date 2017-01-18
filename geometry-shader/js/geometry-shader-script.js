@@ -27,12 +27,15 @@ var color;
 var maxLifetime = 10;
 var size = 40;
 
+var canvas;
+var c_height;
+var c_width;
+
 //initialise gl
 function initGL(canvas) {
     try{
         gl = canvas.getContext("webgl");
-        gl.viewportWidth = canvas.width;
-        gl.viewportHeight = canvas.height;
+        resize(canvas);
     }catch(e){
     }
 
@@ -169,7 +172,9 @@ function initBuffers() {
 
 //draw all elements to canvas
 function drawScene() {
-    gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+    resize(canvas);
+
+    gl.viewport(0, 0, c_width, c_height);
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -229,7 +234,7 @@ function tick() {
 
 //main function
 function webGL() {
-    var canvas = document.getElementById("canvas");
+    canvas = document.getElementById("canvas");
     initGL(canvas);
     initTexture();
     initShaders();
@@ -237,4 +242,19 @@ function webGL() {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
     setInterval(tick, 15);
+}
+
+//check if size changed and apply new sizes
+function resize(canvas){
+    let clientWidth = canvas.clientWidth;
+    let clientHeight = canvas.clientHeight;
+
+    if(clientWidth != c_width || clientHeight != c_height){
+        c_width = clientWidth;
+        c_height = clientHeight;
+        canvas.height = clientHeight;
+        canvas.width = clientWidth;
+
+        gl.viewport(0, 0, c_width, c_height);
+    }
 }

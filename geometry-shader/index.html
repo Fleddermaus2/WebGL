@@ -2,6 +2,15 @@
 <html>
 <head>
     <meta charset="UTF-8">
+
+    <style>
+        #canvas{
+            height: 100%;
+            width: 100%;
+            border: none;
+        }
+    </style>
+
     <script type="text/javascript" src="../js/gl-matrix.js"></script>
     <script type="text/javascript" src="../js/util/Stats.js"></script>
     <script type="text/javascript" src="../geometry-shader/js/geometry-shader-script.js"></script>
@@ -56,7 +65,7 @@
 
 </head>
 <body onload="webGL();">
-<canvas id="canvas" style="border: none;" width="2000" height="1000"></canvas>
+<canvas id="canvas"></canvas>
 <div id="controls">
     <input type="text" id="time" onchange="setTime()">
     <input type="text" id="numParticles" onchange="setNumberOfParticles()">
