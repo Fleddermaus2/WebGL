@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <script type="text/javascript" src="../js/gl-matrix.js"></script>
+    <script type="text/javascript" src="../js/util/Stats.js"></script>
     <script type="text/javascript" src="../simple-particles/simple-particles-script.js"></script>
 
     <script id="shader-fs" type="x-shader/x-fragment">
@@ -37,10 +38,11 @@
 </head>
 <body onload="webGL();">
 <canvas id="canvas" style="border: none;" width="1024" height="720"></canvas>
-
-<br />
-(Use wasd keys to spin the box and <code>e</code>/<code>q</code> to zoom out/in)
-<br>
-<input type="checkbox" id="twinkle" /> Twinkle<br/>
+<div id="controls">
+    <br />
+    (Use wasd keys to spin the box and <code>e</code>/<code>q</code> to zoom out/in)
+    <br>
+    <input type="checkbox" id="twinkle" /> Twinkle<br/>
+</div>
 </body>
 </html>

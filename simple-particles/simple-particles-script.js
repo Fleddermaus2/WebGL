@@ -225,22 +225,6 @@ function initBuffers() {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
     cubeVertexTextureCoordBuffer.itemSize = 2;
     cubeVertexTextureCoordBuffer.numItems = 4;
-
-    /*
-    //index buffer
-    cubeVertexIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeVertexIndexBuffer);
-    var cubeVertexIndices = [
-        0,  1,  2,      0,  2,  3,    // vorne
-        4,  5,  6,      4,  6,  7,    // hinten
-        8,  9,  10,     8,  10, 11,   // oben
-        12, 13, 14,     12, 14, 15,   // unten
-        16, 17, 18,     16, 18, 19,   // rechts
-        20, 21, 22,     20, 22, 23    // links
-    ];
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeVertexIndices), gl.STATIC_DRAW);
-    cubeVertexIndexBuffer.itemSize = 1;
-    cubeVertexIndexBuffer.numItems = 36;*/
 }
 
 function drawStar() {
@@ -358,11 +342,18 @@ function animate() {
     lastTime = timeNow;
 }
 
+var stats = new Stats();
+window.onload = function () {
+    document.getElementById("controls").appendChild(stats.domElement);
+};
 function tick() {
-    requestAnimationFrame(tick);
+    stats.begin();
     handleKeys();
     drawScene();
     animate();
+    stats.end();
+
+    requestAnimationFrame(tick);
 }
 
 //main function

@@ -402,11 +402,18 @@ function animate() {
     lastTime = timeNow;
 }
 
+var stats = new Stats();
+window.onload = function () {
+    document.getElementById("controls").appendChild(stats.domElement);
+};
 function tick() {
-    requestAnimationFrame(tick);
+    stats.begin();
     handleKeys();
     drawScene();
     animate();
+    stats.end();
+
+    requestAnimationFrame(tick);
 }
 
 //main function

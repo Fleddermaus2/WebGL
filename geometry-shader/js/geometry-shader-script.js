@@ -216,9 +216,15 @@ function animate() {
     lastTime = timeNow;
 }
 
+var stats = new Stats();
+window.onload = function () {
+    document.getElementById("controls").appendChild(stats.domElement);
+};
 function tick() {
+    stats.begin();
     animate();
     drawScene();
+    stats.end();
 }
 
 //main function
