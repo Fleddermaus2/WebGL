@@ -31,6 +31,8 @@ var canvas;
 var c_height;
 var c_width;
 
+var imagePaths = {star: "../img/star.gif", cat: "../img/grumpycat.gif", box: "../img/crate.gif"};
+
 //initialise gl
 function initGL(canvas) {
     try{
@@ -242,19 +244,4 @@ function webGL() {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
     setInterval(tick, 15);
-}
-
-//check if size changed and apply new sizes
-function resize(canvas){
-    let clientWidth = canvas.clientWidth;
-    let clientHeight = canvas.clientHeight;
-
-    if(clientWidth != c_width || clientHeight != c_height){
-        c_width = clientWidth;
-        c_height = clientHeight;
-        canvas.height = clientHeight;
-        canvas.width = clientWidth;
-
-        gl.viewport(0, 0, c_width, c_height);
-    }
 }

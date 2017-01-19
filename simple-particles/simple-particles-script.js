@@ -23,7 +23,7 @@ var tilt = 90;
 var spin = 0;
 
 //distance to object
-var z = -10.0;
+var z = -20.0;
 
 //animation
 var lastTime = 0;
@@ -44,6 +44,8 @@ var c_height;
 var c_width;
 
 var numParticles = 100;
+
+var imagePaths = {star: "../img/star.gif", cat: "../img/grumpycat.gif", box: "../img/crate.gif"};
 
 //initialise gl
 function initGL(canvas) {
@@ -270,7 +272,7 @@ Star.prototype.draw = function (tilt, spin, twinkle) {
         drawStar();
     }
 
-    //stars spin around z at the same rate
+    //stars rotate around own z axis
     mat4.rotate(mvMatrix, mvMatrix, degToRad(spin), [0.0, 0.0, 1.0]);
 
     //draw star in main color
@@ -284,8 +286,8 @@ Star.prototype.animate = function (elapsedTime) {
     this.angle += this.rotationSpeed * effectiveFPMS * elapsedTime;
     //decrease the distance, resetting the star to the outside of the spiral if it is at the center
     this.dist -= 0.01 * effectiveFPMS * elapsedTime;
-    if(this.dist < 0.0){
-        this.dist += 5.0;
+    if(this.dist < 1.0){
+        this.dist += 10.0;
         this.randomiseColors();
     }
 };
@@ -306,7 +308,7 @@ function initWorldObjects() {
     stars = [];
 
     for(var i = 0; i < numParticles; i++){
-        stars.push(new Star((i/numParticles) * 5.0, i/numParticles));
+        stars.push(new Star((i/numParticles) * 10.0, i/numParticles));
     }
 }
 
@@ -330,7 +332,7 @@ function drawScene() {
     var twinkle = document.getElementById("twinkle").checked;
     for(var i in stars){
         stars[i].draw(tilt, spin, twinkle);
-        spin += 0.1;
+        spin += 0.01;
     }
 }
 
@@ -402,4 +404,8 @@ function resize(canvas){
 function setNumberOfParticles() {
     numParticles = document.getElementById("numParticles").value;
     initWorldObjects();
+}
+
+function setImage(value){
+    objectTexture.image.src = imagePaths[value];
 }
