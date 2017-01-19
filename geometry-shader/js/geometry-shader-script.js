@@ -20,11 +20,12 @@ var texture;
 //particles
 var numParticles = 500;
 
-var time = 1.5;
+var maxLifetime = 1;
+
+var time = maxLifetime + 0.5;
 var centerPos;
 var color;
 
-var maxLifetime = 10;
 var size = 40;
 
 var canvas;
@@ -204,7 +205,6 @@ function drawScene() {
     gl.drawArrays(gl.POINTS, 0, pointLifetimesBuffer.numItems);
 }
 
-//rotate objects based on passed time since last call
 function animate() {
     var timeNow = new Date().getTime();
 
@@ -213,7 +213,8 @@ function animate() {
 
         time += elapsed / 3000;
     }
-    if(time >= 1.0){
+    //create new particles if previous ones decayed
+    if(time >= maxLifetime){
         time = 0;
         centerPos = [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5];
         color = [Math.random() / 2 + 0.5, Math.random() / 2 + 0.5, Math.random() / 2 + 0.5, 0.5];
