@@ -57,9 +57,9 @@ define([
         this.constrainXOrbit = true;
         this.constrainYOrbit = false;
         
-        this.maxDistance = 512;
+        this.maxDistance = 2048;
         this.minDistance = 16;
-        this.distanceStep = 1.0;
+        this.distanceStep = 2.0;
         this.constrainDistance = true;
 
         this._dirty = true;

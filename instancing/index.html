@@ -33,18 +33,19 @@ freely, subject to the following restrictions:
         <script src="../instancing/js/util/require.js"></script>
         <script>
             require.config({
-                baseUrl: "js"
+                baseUrl: "instancing/js/"
             });
 
             require([
-                "../js/util/gl-context-helper",
-                "../js/util/camera",
-                "../js/light",
-                "../js/util/mesh-utils",
-                "../js/util/gl-util",
-                "../js/util/gl-matrix-min",
-                "../js/util/game-shim.js",
-                "../js/util/Stats.js"
+                "util/gl-context-helper",
+                "util/camera",
+                "light",
+                "util/mesh-utils",
+                "util/gl-util",
+                "util/game-shim",
+                "util/Stats",
+                "util/jquery-3.1.1.min",
+                "util/gl-matrix-min"
             ], function(GLContextHelper, Camera, Light, MeshUtils, GLUtil) {
                 "use strict";
 
@@ -124,10 +125,10 @@ freely, subject to the following restrictions:
                     this.canvas = canvas;
 
                     this.camera = new Camera.OrbitCamera(canvas);
-                    this.camera.maxDistance = 100;
+                    this.camera.maxDistance = 1000;
                     this.camera.minDistance = 15;
-                    this.camera.distanceStep = 0.01;
-                    this.camera.setDistance(40);
+                    this.camera.distanceStep = 1;
+                    this.camera.setDistance(5 * numParticles);
                     this.camera.setCenter([0, 0, 0]);
                     this.camera.setYUp(false);
 
@@ -148,7 +149,7 @@ freely, subject to the following restrictions:
                     this.instancedShader = GLUtil.createProgram(gl, instancedVS, defaultFS);
 
                     this._buildMonkey(gl);
-                    this._buildInstances(gl, 20);
+                    this._buildInstances(gl, numParticles);
 
                     this.useHardwareInstancing = false;
 
@@ -269,6 +270,9 @@ freely, subject to the following restrictions:
                 };
 
                 Renderer.prototype._buildInstances = function(gl, monkeyCubeSize) {
+
+                    console.log("new instance " + monkeyCubeSize);
+
                     var monkeySize = 3.0;
                     var hmcs = monkeyCubeSize / 2.0;
 
@@ -306,25 +310,24 @@ freely, subject to the following restrictions:
                     this.monkeyColors = colorData;
                 };
 
-                // Setup the canvas and GL context, initialize the scene 
+                // Setup the canvas and GL context, initialize the scene
+                var numParticles = 10;
                 var canvas = document.getElementById("webgl-canvas");
                 var contextHelper = new GLContextHelper(canvas, document.getElementById("content-frame"));
                 var renderer = new Renderer(contextHelper.gl, canvas);
 
-                var fullscreenBtn = document.getElementById("fullscreen");
-                if(contextHelper.fullscreenSupported) {
-                    fullscreenBtn.addEventListener("click", function() {
-                        contextHelper.toggleFullscreen();
-                    });
-                } else {
-                    fullscreenBtn.parentElement.removeChild(fullscreenBtn);
-                }
 
                 var stats = new Stats();
                 document.getElementById("controls-container").appendChild(stats.domElement);
-                
+
                 // Get the render loop going
                 contextHelper.start(renderer, stats);
+
+                $("#numParticles").change(function () {
+                    numParticles = document.getElementById("numParticles").value;
+                    renderer = new Renderer(contextHelper.gl, canvas);
+                    contextHelper.start(renderer, stats);
+                });
             });
         </script>
     </head>
@@ -344,7 +347,10 @@ freely, subject to the following restrictions:
                 <span>
                     Use the Mouse to rotate grid and mouse wheel to zoom in and out.
                 </span>
-                <button id="fullscreen">Fullscreen</button>
+                <span>
+                    <label for="numParticles">Length of Cube</label>
+                    <input type="text" id="numParticles" placeholder="100">
+                </span>
             </div>
         </div>
     </body>

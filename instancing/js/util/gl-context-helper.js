@@ -29,7 +29,7 @@
 
 define([
     "util/gl-util",
-    "js/util/game-shim.js"
+    "util/game-shim"
 ], function(glUtil) {
 
     "use strict";
