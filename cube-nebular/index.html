@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <style>
+        #canvas{
+            height: 100%;
+            width: 100%;
+            border: none;
+        }
+    </style>
+
+    <script type="text/javascript" src="../js/gl-matrix.js"></script>
+    <script type="text/javascript" src="../js/util/Stats.js"></script>
+    <script type="text/javascript" src="../cube-nebular/cube-nebular-script.js"></script>
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+    precision mediump float;
+
+    varying vec2 vTextureCoord;
+
+    uniform sampler2D uSampler;
+    uniform vec3 uColor;
+
+    void main(void) {
+        vec4 textureColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+        gl_FragColor = textureColor * vec4(uColor, 1.0);
+    }
+    </script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec3 aVertexPosition;
+    attribute vec2 aTextureCoord;
+
+    uniform mat4 uMVMatrix;
+    uniform mat4 uPMatrix;
+
+    varying vec2 vTextureCoord;
+
+    void main(void) {
+        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        vTextureCoord = aTextureCoord;
+    }
+    </script>
+
+</head>
+<body onload="webGL();">
+<canvas id="canvas"></canvas>
+<div id="controls">
+    <br />
+    (Use wasd keys to spin the particle system and <code>e</code>/<code>q</code> to zoom out/in)
+    <br>
+    <label for="numParticles">Number of Particles</label>
+    <input type="text" id="numParticles" onchange="setNumberOfParticles()" placeholder="100">
+</div>
+</body>
+</html>

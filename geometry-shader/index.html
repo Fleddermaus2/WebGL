@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <style>
+        #canvas{
+            height: 100%;
+            width: 100%;
+            border: none;
+        }
+    </style>
+
+    <script type="text/javascript" src="../js/gl-matrix.js"></script>
+    <script type="text/javascript" src="../js/util/Stats.js"></script>
+    <script type="text/javascript" src="../geometry-shader/js/geometry-shader-script.js"></script>
+    <script type="text/javascript" src="../geometry-shader/js/geosh-utils.js"></script>
+
+    <script id="shader-fs" type="x-shader/x-fragment">
+
+      precision mediump float;
+
+      uniform vec4 uColor;
+
+      varying float vLifetime;
+
+      uniform sampler2D sTexture;
+
+
+      void main(void) {
+        vec4 texColor;
+        texColor = texture2D(sTexture, gl_PointCoord);
+        gl_FragColor = vec4(uColor) * texColor;
+        gl_FragColor.a *= vLifetime;
+      }
+    </script>
+
+    <script id="shader-vs" type="x-shader/x-vertex">
+
+      uniform float uTime;
+      uniform vec3 uCenterPosition;
+      uniform float uSize;
+
+      attribute float aLifetime;
+      attribute vec3 aStartPosition;
+      attribute vec3 aEndPosition;
+
+      varying float vLifetime;
+
+
+      void main(void) {
+        if (uTime <= aLifetime) {
+          gl_Position.xyz = aStartPosition + (uTime * aEndPosition);
+          gl_Position.xyz += uCenterPosition;
+          gl_Position.w = 1.0;
+        } else {
+          gl_Position = vec4(-1000, -1000, 0, 0);
+        }
+
+        vLifetime = 1.0 - (uTime / aLifetime);
+        vLifetime = clamp(vLifetime, 0.0, 1.0);
+        gl_PointSize = (vLifetime * vLifetime) * uSize;
+      }
+    </script>
+
+</head>
+<body onload="webGL();">
+<canvas id="canvas"></canvas>
+<div id="controls">
+    <label for="time">Lifetime</label>
+    <input type="text" id="time" onchange="setTime()" placeholder="1">
+    <label for="numParticles">Number of Particles</label>
+    <input type="text" id="numParticles" onchange="setNumberOfParticles()" placeholder="500">
+    <label for="size">Size of Particle</label>
+    <input type="text" id="size" onchange="setSize()" placeholder="40">
+    <select onclick="setImage(this.value)">
+        <option value="star">Star</option>
+        <option value="cat">Cat</option>
+        <option value="box">Box</option>
+    </select>
+</div>
+</body>
+</html>

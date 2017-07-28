@@ -1,93 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <style>
-        #canvas{
-            height: 100%;
-            width: 100%;
-            border: none;
-        }
-    </style>
-
-    <script type="text/javascript" src="jquery-3.1.0.min.js"></script>
-    <script type="text/javascript" src="gl-matrix.js"></script>
-    <script type="text/javascript" src="Picker.js"></script>
-    <script type="text/javascript" src="Cube.js"></script>
-    <script type="text/javascript" src="Program.js"></script>
-    <script type="text/javascript" src="Shader.js"></script>
-    <script type="text/javascript" src="Input.js"></script>
-    <script type="text/javascript" src="Utils.js"></script>
-    <script type="text/javascript" src="script.js"></script>
-
-    <script id="shader-fs" type="x-shader/x-fragment">
-    precision mediump float;
-
-    uniform vec3 uColor;
-    uniform vec3 uPColor;
-    uniform bool uOffscreen;
-    uniform bool uOutline;
-
-    varying vec4 vColor;
-    varying vec3 vLighting;
-
-    void main(void) {
-        if(uOutline){
-            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-        }
-        else{
-            if(uOffscreen){
-                gl_FragColor = vec4(uPColor, 1.0);
-            }else{
-                gl_FragColor = vColor * vec4(uColor * vLighting, 1.0);
-            }
-        }
-    }
-    </script>
-
-    <script id="shader-vs" type="x-shader/x-vertex">
-    attribute vec3 aVertexPosition;
-    //attribute vec3 aVertexNormal;
-    attribute vec4 aVertexColor;
-
-    //uniform mat4 uNMatrix;
-    uniform mat4 uMVMatrix;
-    uniform mat4 uPMatrix;
-
-    varying vec4 vColor;
-    varying vec3 vLighting;
-
-    void main(void) {
-        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-        vColor = aVertexColor;
-
-        //lighting
-        vec3 ambientLight = vec3(1.0, 1.0, 1.0);
-        vLighting = ambientLight;
-
-    }
-    </script>
-
+    <title>Particle Systems</title>
 </head>
-<body onload="webGL();">
-<canvas id="canvas"></canvas>
-<br />
-WASD and Q/E to turn and rotate<br>
-R and F to zoom<br>
-Left MB raise<br>
-Right MB lower<br>
-<div>Cube count: <span id="count"></span></div>
-<form id="worldForm" method="post">
-    <label for="xGrid">Grid: X</label>
-    <input type="number" id="xGrid" name="xGrid" placeholder="1">
-    <label for="yGrid">Grid: Y</label>
-    <input type="number" id="yGrid" name="yGrid" placeholder="1">
-    <label for="cScale">Cube: Scale</label>
-    <input type="number" id="cScale" name="cScale" placeholder="1">
-    <button type="button" id="worldSubmit" onclick="handleForm()">Submit</button>
-</form>
-<label for="brushSize">Brush: Size</label>
-<input name="brushSize" id="brushSize" type="number" placeholder="1">
+<body>
+    <span>
+        <ul>
+            <li><a href="simple-particles">Simple Particles</a></li>
+            <li><a href="cube-nebular">Cube Nebular</a></li>
+            <li><a href="geometry-shader">Geometry Shader</a></li>
+            <li><a href="instancing">Instancing</a></li>
+        </ul>
+    </span>
 </body>
 </html>
